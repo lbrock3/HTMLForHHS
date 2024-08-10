@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Verb Conjugation Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Spanish Verb Conjugation Game</h1>
+    <div id="intro">
+        <p>Enter your name:</p>
+        <input type="text" id="username" placeholder="Your Name">
+        <button onclick="startGame()">Start Game</button>
+    </div>
+    <div id="game" style="display: none;">
+        <p id="verb"></p>
+        <p id="form"></p>
+        <input type="text" id="answer" placeholder="Enter conjugation">
+        <button onclick="submitAnswer()">Submit Answer</button>
+        <p id="feedback"></p>
+        <p id="score"></p>
+    </div>
+    <div id="end" style="display: none;">
+        <p id="finalMessage"></p>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+
+    <script>
+        const verbs = [
+            { verb: 'hablar', translation: 'to speak' },
+            { verb: 'bailar', translation: 'to dance' },
+            { verb: 'cantar', translation: 'to sing' },
+            { verb: 'trabajar', translation: 'to work' },
+            { verb: 'escuchar', translation: 'to listen' },
+            { verb: 'estudiar', translation: 'to study' },
+            { verb: 'tocar', translation: 'to touch/play an instrument' },
+            { verb: 'caminar', translation: 'to walk' },
+            { verb: 'enviar', translation: 'to send' },
+            { verb: 'preparar', translation: 'to prepare' },
+            { verb: 'comer', translation: 'to eat' },
+            { verb: 'beber', translation: 'to drink' },
+            { verb: 'leer', translation: 'to read' },
+            { verb: 'vender', translation: 'to sell' },
+            { verb: 'aprender', translation: 'to learn' },
+            { verb: 'romper', translation: 'to break' },
+            { verb: 'creer', translation: 'to believe' },
+            { verb: 'prometer', translation: 'to promise' },
+            { verb: 'entender', translation: 'to understand' },
+            { verb: 'temer', translation: 'to fear' },
+            { verb: 'vivir', translation: 'to live' },
+            { verb: 'escribir', translation: 'to write' },
+            { verb: 'abrir', translation: 'to open' },
+            { verb: 'decidir', translation: 'to decide' },
+            { verb: 'recibir', translation: 'to receive' },
+            { verb: 'subir', translation: 'to go up' },
+            { verb: 'compartir', translation: 'to share' },
+            { verb: 'permitir', translation: 'to permit' },
+            { verb: 'unir', translation: 'to unite' },
+            { verb: 'cumplir', translation: 'to fulfill' },
+            { verb: 'llamar', translation: 'to call' },
+            { verb: 'usar', translation: 'to use' },
+            { verb: 'amar', translation: 'to love' },
+            { verb: 'pensar', translation: 'to think' },
+            { verb: 'mirar', translation: 'to watch' },
+            { verb: 'limpiar', translation: 'to clean' },
+            { verb: 'buscar', translation: 'to search' },
+            { verb: 'ganar', translation: 'to win' },
+            { verb: 'llegar', translation: 'to arrive' },
+            { verb: 'ayudar', translation: 'to help' }
+        ];
+
+        const correctForms = {
+            ar: {
+                yo: 'o',
+                tú: 'as',
+                él: 'a',
+                ella: 'a',
+                usted: 'a',
+                nosotros: 'amos',
+                nosotras: 'amos',
+                ellos: 'an',
+                ellas: 'an',
+                ustedes: 'an'
+            },
+            er: {
+                yo: 'o',
+                tú: 'es',
+                él: 'e',
+                ella: 'e',
+                usted: 'e',
+                nosotros: 'emos',
+                nosotras: 'emos',
+                ellos: 'en',
+                ellas: 'en',
+                ustedes: 'en'
+            },
+            ir: {
+                yo: 'o',
+                tú: 'es',
+                él: 'e',
+                ella: 'e',
+                usted: 'e',
+                nosotros: 'imos',
+                nosotras: 'imos',
+                ellos: 'en',
+                ellas: 'en',
+                ustedes: 'en'
+            }
+        };
+
+        let username = '';
+        let score = 0;
+        let currentVerbIndex = 0;
+        let timer;
+        let timeLeft = 120; // 2 minutes in seconds
+        let currentVerb = {};
+        let currentForm = '';
+
+        function startGame() {
+            username = document.getElementById('username').value;
+            if (username.trim() === '') {
+                alert('Please enter your name.');
+                return;
+            }
+
+            document.getElementById('intro').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            document.getElementById('end').style.display = 'none';
+
+            currentVerbIndex = 0;
+            score = 0;
+            timeLeft = 120;
+            document.getElementById('score').textContent = `Score: ${score}`;
+
+            displayNextVerb();
+            startTimer();
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endGame();
+                }
+                document.getElementById('score').textContent = `Score: ${score} Time left: ${timeLeft}s`;
+            }, 1000);
+        }
+
+        function displayNextVerb() {
+            if (currentVerbIndex >= verbs.length) {
+                currentVerbIndex = 0; // Restart the list if all verbs have been used
+            }
+
+            currentVerb = verbs[currentVerbIndex];
+            const verbEnding = currentVerb.verb.slice(-2);
+            const verbType = verbEnding === 'ar' ? 'ar' : (verbEnding === 'er' ? 'er' : 'ir');
+            const forms = Object.keys(correctForms[verbType]);
+
+            currentForm = forms[Math.floor(Math.random() * forms.length)];
+
+            document.getElementById('verb').textContent = `${currentVerb.verb} (${currentVerb.translation})`;
+            document.getElementById('form').textContent = `Conjugate for: ${currentForm}`;
+            document.getElementById('answer').value = '';
+            document.getElementById('feedback').textContent = '';
+        }
+
+        function submitAnswer() {
+            const answer = document.getElementById('answer').value.trim().toLowerCase();
+            const verbEnding = currentVerb.verb.slice(-2);
+            const verbType = verbEnding === 'ar' ? 'ar' : (verbEnding === 'er' ? 'er' : 'ir');
+            const correctAnswer = correctForms[verbType][currentForm];
+            const correctConjugation = currentVerb.verb.slice(0, -2) + correctAnswer;
+
+            if (answer === correctConjugation) {
+                document.getElementById('feedback').textContent = `CORRECTO! The correct conjugation is: ${correctConjugation}`;
+                score++;
+            } else {
+                document.getElementById('feedback').textContent = `Incorrecto. The correct conjugation is: ${correctConjugation}`;
+            }
+
+            document.getElementById('score').textContent = `Score: ${score}`;
+
+            setTimeout(() => {
+                currentVerbIndex++;
+                displayNextVerb();
+            }, 2000); // 2-second delay to show feedback
+        }
+
+        function endGame() {
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('end').style.display = 'block';
+            document.getElementById('finalMessage').textContent = `¡Muy Bien, ${username}! ${score} correcto!`;
+        }
+
+        function restartGame() {
+            document.getElementById('end').style.display = 'none';
+            document.getElementById('intro').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

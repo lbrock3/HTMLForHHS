@@ -1,0 +1,104 @@
+<<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Señor Brock's Totally Awesome Random Student Caller</title>
+    <style>
+        #studentDisplay {
+            font-size: 24px;
+            font-weight: bold;
+            white-space: pre-wrap; /* Preserve whitespace for line breaks */
+        }
+    </style>
+</head>
+<body>
+    <h1>Señor Brock's Totally Awesome Random Student Caller</h1>
+    <p id="studentDisplay"></p>
+    <button onclick="callNextStudent()">Call Next Student</button>
+    <button onclick="reset()">Start Over</button>
+    <button onclick="createGroups()">Create Groups</button>
+
+    <script>
+        let originalStudentList = [
+            "Burch Mariah",
+            "Daniel Carlessia",
+            "David David",
+            "Eddins Jaidyn",
+            "Eleby Quentin",
+            "Faulks Joycelyn",
+            "Freeland Laela",
+            "Hall Maddox",
+            "Hargrove Jalen",
+            "Herring Michael",
+            "Hightower Chase",
+            "Jackson Brandon",
+            "Jallow Dude",
+            "Johnson Ke'Yasmine",
+            "Johnson Nylah",
+            "Long Cashmere",
+            "Perkins Shanya",
+            "Reeves Asiah",
+            "Seldon Tristyn",
+            "Stack Kailee",
+            "Stokes Takorey",
+            "Vendryes Jayden",
+            "Washington Brian"
+        ];
+
+        let studentList = [...originalStudentList]; // Create a copy of the original list
+
+        // Function to reverse the first and second words in a student's name
+        function reverseName(name) {
+            const [firstName, lastName] = name.split(' ');
+            return `${lastName} ${firstName}`;
+        }
+
+        function callNextStudent() {
+            if (studentList.length === 0) {
+                document.getElementById("studentDisplay").textContent = "All students have been called.";
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * studentList.length);
+            const randomStudent = studentList.splice(randomIndex, 1)[0];
+            const reversedStudent = reverseName(randomStudent);
+            document.getElementById("studentDisplay").textContent = `Calling on student: ${reversedStudent}`;
+        }
+
+        function reset() {
+            studentList = [...originalStudentList]; // Reset the list to the original
+            document.getElementById("studentDisplay").textContent = "";
+        }
+
+        function createGroups() {
+            let groupSize = prompt("Enter group size:");
+            groupSize = parseInt(groupSize);
+
+            if (isNaN(groupSize) || groupSize <= 0) {
+                alert("Please enter a valid group size.");
+                return;
+            }
+
+            let shuffledStudents = [...studentList].sort(() => Math.random() - 0.5);
+            let groups = [];
+
+            for (let i = 0; i < shuffledStudents.length; i += groupSize) {
+                groups.push(shuffledStudents.slice(i, i + groupSize));
+            }
+
+            displayGroups(groups);
+        }
+
+        function displayGroups(groups) {
+            let displayText = "Groups:<br>";
+            groups.forEach((group, index) => {
+                const reversedGroup = group.map(reverseName);
+                displayText += `Group ${index + 1}: ${reversedGroup.join(", ")}<br><br>`;
+            });
+
+            document.getElementById("studentDisplay").innerHTML = displayText;
+        }
+    </script>
+</body>
+</html>

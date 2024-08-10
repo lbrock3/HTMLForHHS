@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Words</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #wordDisplay {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="wordDisplay">Press the button to see a word</div>
+<button onclick="showWord()">Show Word</button>
+
+<script>
+    const words = [
+        "the houses", "the dog", "the car", "the tables", "the cat", "the chair", "the tree", "the window", 
+        "the sun", "the moon", "the water", "the star", "the boy", "the girl", "the man", "the woman", 
+        "the day", "the night", "the shoes", "the shirt", "the pants", "the skirt", "the bird", "the flowers", 
+        "the fish", "the butterflies", "the watches", "the bell", "the river", "the mountain", "the sea", 
+        "the beach", "the forest", "the jungle", "the field", "the city", "the town", "the street", 
+        "the path", "the school", "the male teacher", "the female teacher", "the male student", "the female student", 
+        "the students", "the notebook", "the sheet", "the pens", "the pens (fountain pens)", "the phone", 
+        "the computers", "the keyboard", "the screen", "the mouse", "the printer", "the bathroom", 
+        "the kitchen", "the dining room", "the living room", "the bedroom", "the beds", "the closet", 
+        "the lamp", "the painting", "the carpet", "the mirror", "the curtains", "the gardens", 
+        "the pools", "the roof", "the wall", "the floor", "the door", "the cars", "the bicycles", 
+        "the trains", "the station", "the airplanes", "the road", "the traffic light", "the signs", 
+        "the bridges", "the towers", "the hospital", "the pharmacies", "the doctor", "the female doctors", 
+        "the male nurse", "the female nurses", "the medications", "the medicines", "the fire", 
+        "the gasoline", "the oil", "the electricity", "the wind", "the rain", "the thunder", 
+        "the storms", "the lightning bolts", "the clouds", "the sky", "the earth", "the planet", 
+        "the galaxies", "the universe", "the stars", "the spaces", "the gravity", "the atom", 
+        "the molecule", "the element", "the table", "the experiment", "the science", "the male scientist", 
+        "the female scientists", "the male researchers", "the female researchers", "the laboratory", 
+        "the hypothesis", "the conclusions", "the debate", "the discussion", "the arguments", 
+        "the theories", "the fact", "the opinions", "the perspectives", "the errors", "the correction", 
+        "the success", "the victory", "the failure", "the defeat", "the games", "the sport", 
+        "the competition", "the teams", "the strategies", "the male player", "the female player", 
+        "the referees", "the rules", "the results", "the final", "the trophy", "the medals", 
+        "the gold", "the silver", "the bronze", "the male champion", "the female champion", 
+        "the tournament", "the leagues", "the match", "the ticket", "the stadium", "the audience", 
+        "the fans", "the celebrations", "the goal", "the goalpost", "the ball", "the ball (small)", 
+        "the boats", "the racket", "the male swimmer", "the female swimmers", "the male tennis player", 
+        "the female tennis player", "the male cyclist", "the female cyclist", "the male runner", 
+        "the male pilot", "the female pilot", "the championships", "the rankings", "the training", 
+        "the practice", "the effort", "the dedication", "the achievement", "the goal", "the objective", 
+        "the ambition", "the dreams", "the reality", "the future", "the hope", "the present", 
+        "the memory", "the memory (recall)", "a book", "a house", "some dogs", "some female cats", 
+        "a car", "a table", "some male cats", "some chairs", "a tree", "a window", "a sun", "a moon", 
+        "some water", "some stars", "a boy", "a girl", "a man", "a woman", "a day", "a night", 
+        "some shoes", "some shirts", "some pants", "a skirt", "a bird", "a flower", "a fish", 
+        "some butterflies", "a watch", "a bell", "a river", "a mountain", "a sea", "a beach", 
+        "a forest", "a jungle", "a field", "a city", "a town", "a street", "a path", "a school", 
+        "a male teacher", "a female teacher", "a male student", "a female student", "a notebook", 
+        "a sheet", "a pen", "a pen (fountain pen)", "a phone", "a computer", "a keyboard", 
+        "a screen", "a mouse", "a printer", "a bathroom", "a kitchen", "a dining room", 
+        "a living room", "a bedroom", "a bed", "a closet", "a lamp", "a painting", "a carpet", 
+        "a mirror", "some curtains", "a garden", "a pool", "a roof", "a wall", "a floor", 
+        "a door", "some cars", "a bicycle", "a train", "a station", "an airplane", "a road", 
+        "a traffic light", "a sign", "a bridge", "a tower", "a hospital", "a pharmacy", 
+        "a doctor", "a female doctor", "some male nurses", "some female nurses", "a medication", 
+        "a medicine", "a fire", "a gasoline", "an oil", "an electricity", "a wind", "a rain", 
+        "a storm", "a lightning bolt", "some clouds", "a sky", "a land", "a planet", "a galaxy", 
+        "a universe", "some stars", "a space", "a gravity", "an atom", "a molecule", "an element", 
+        "a table", "an experiment", "a science", "a male scientist", "a female scientist", 
+        "a male researcher", "a female researcher", "a laboratory", "a hypothesis", "a result", 
+        "a conclusion", "a debate", "a discussion", "an argument", "a theory", "a fact", 
+        "an opinion", "a point", "a perspective", "an error", "a correction", "a success", 
+        "a victory", "a failure", "a defeat", "a game", "a match", "a sport", "a competition", 
+        "a team", "a strategy", "a male player", "a female player", "a referee", "a rule", 
+        "a result", "a final", "a trophy", "a medal", "a gold", "a silver", "a bronze", 
+        "a male champion", "a female champion", "a tournament", "a league", "a match", 
+        "a ticket", "a stadium", "some bleachers", "an audience", "a hobby"
+    ];
+
+    let usedWords = [];
+
+    function showWord() {
+        if (usedWords.length === words.length) {
+            usedWords = [];
+        }
+
+        let randomIndex;
+        let word;
+        
+        do {
+            randomIndex = Math.floor(Math.random() * words.length);
+            word = words[randomIndex];
+        } while (usedWords.includes(word));
+
+        usedWords.push(word);
+        document.getElementById("wordDisplay").innerText = word;
+    }
+</script>
+
+</body>
+</html>

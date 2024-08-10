@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Artículos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+        h1 {
+            color: #4682b4;
+        }
+        #game, #end {
+            display: none;
+        }
+        #word {
+            font-size: 24px;
+            margin: 20px;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #87cefa;
+            color: white;
+        }
+        #result {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        #timer {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        #type {
+            font-size: 20px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        #feedback {
+            font-size: 20px;
+            margin-top: 20px;
+            color: #ff4500;
+        }
+    </style>
+</head>
+<body>
+    <h1>Juego de Artículos</h1>
+    <div id="start">
+        <label for="name">Ingresa tu nombre:</label>
+        <input type="text" id="name" required>
+        <button class="button" onclick="startGame()">Comenzar</button>
+    </div>
+    <div id="game">
+        <div id="type"></div>
+        <div id="word"></div>
+        <div id="choices">
+            <button class="button" onclick="checkAnswer('el')">el</button>
+            <button class="button" onclick="checkAnswer('la')">la</button>
+            <button class="button" onclick="checkAnswer('los')">los</button>
+            <button class="button" onclick="checkAnswer('las')">las</button>
+            <button class="button" onclick="checkAnswer('un')">un</button>
+            <button class="button" onclick="checkAnswer('una')">una</button>
+            <button class="button" onclick="checkAnswer('unos')">unos</button>
+            <button class="button" onclick="checkAnswer('unas')">unas</button>
+        </div>
+        <div id="feedback"></div>
+        <div id="result"></div>
+        <div id="timer">Tiempo: 120 segundos</div>
+    </div>
+    <div id="end">
+        <h2 id="finalMessage"></h2>
+        <button class="button" onclick="location.reload()">Jugar otra vez</button>
+    </div>
+
+    <script>
+        const words = [
+            { word: "casas", article: "las", type: "definite" },
+            { word: "perro", article: "el", type: "definite" },
+            { word: "coche", article: "el", type: "definite" },
+            { word: "mesas", article: "las", type: "definite" },
+            { word: "gato", article: "el", type: "definite" },
+            { word: "silla", article: "la", type: "definite" },
+            { word: "árbol", article: "el", type: "definite" },
+            { word: "ventana", article: "la", type: "definite" },
+            { word: "sol", article: "el", type: "definite" },
+            { word: "luna", article: "la", type: "definite" },
+            { word: "agua", article: "el", type: "definite" },
+            { word: "estrella", article: "la", type: "definite" },
+            { word: "niño", article: "el", type: "definite" },
+            { word: "niña", article: "la", type: "definite" },
+            { word: "hombre", article: "el", type: "definite" },
+            { word: "mujer", article: "la", type: "definite" },
+            { word: "día", article: "el", type: "definite" },
+            { word: "noche", article: "la", type: "definite" },
+            { word: "zapatos", article: "los", type: "definite" },
+            { word: "camisa", article: "la", type: "definite" },
+            { word: "pantalón", article: "el", type: "definite" },
+            { word: "falda", article: "la", type: "definite" },
+            { word: "pájaro", article: "el", type: "definite" },
+            { word: "flores", article: "las", type: "definite" },
+            { word: "pez", article: "el", type: "definite" },
+            { word: "mariposas", article: "las", type: "definite" },
+            { word: "relojes", article: "los", type: "definite" },
+            { word: "campana", article: "la", type: "definite" },
+            { word: "río", article: "el", type: "definite" },
+            { word: "montaña", article: "la", type: "definite" },
+            { word: "mar", article: "el", type: "definite" },
+            { word: "playa", article: "la", type: "definite" },
+            { word: "bosque", article: "el", type: "definite" },
+            { word: "selva", article: "la", type: "definite" },
+            { word: "campo", article: "el", type: "definite" },
+            { word: "ciudad", article: "la", type: "definite" },
+            { word: "pueblo", article: "el", type: "definite" },
+            { word: "calle", article: "la", type: "definite" },
+            { word: "camino", article: "el", type: "definite" },
+            { word: "escuela", article: "la", type: "definite" },
+            { word: "profesor", article: "el", type: "definite" },
+            { word: "profesora", article: "la", type: "definite" },
+            { word: "estudiante", article: "el", type: "definite" },
+            { word: "estudiante", article: "la", type: "definite" },
+            { word: "estudiantes", article: "los", type: "definite" },
+            { word: "cuaderno", article: "el", type: "definite" },
+            { word: "hoja", article: "la", type: "definite" },
+            { word: "bolígrafos", article: "los", type: "definite" },
+            { word: "plumas", article: "las", type: "definite" },
+            { word: "teléfono", article: "el", type: "definite" },
+            { word: "computadoras", article: "las", type: "definite" },
+            { word: "teclado", article: "el", type: "definite" },
+            { word: "pantalla", article: "la", type: "definite" },
+            { word: "ratón", article: "el", type: "definite" },
+            { word: "impresora", article: "la", type: "definite" },
+            { word: "baño", article: "el", type: "definite" },
+            { word: "cocina", article: "la", type: "definite" },
+            { word: "comedor", article: "el", type: "definite" },
+            { word: "sala", article: "la", type: "definite" },
+            { word: "dormitorio", article: "el", type: "definite" },
+            { word: "camas", article: "las", type: "definite" },
+            { word: "armario", article: "el", type: "definite" },
+            { word: "lámpara", article: "la", type: "definite" },
+            { word: "cuadro", article: "el", type: "definite" },
+            { word: "alfombra", article: "la", type: "definite" },
+            { word: "espejo", article: "el", type: "definite" },
+            { word: "cortinas", article: "las", type: "definite" },
+            { word: "jardín", article: "el", type: "definite" },
+            { word: "piscinas", article: "las", type: "definite" },
+            { word: "techo", article: "el", type: "definite" },
+            { word: "pared", article: "la", type: "definite" },
+            { word: "piso", article: "el", type: "definite" },
+            { word: "puerta", article: "la", type: "definite" },
+            { word: "coches", article: "los", type: "definite" },
+            { word: "bicicletas", article: "las", type: "definite" },
+            { word: "trenes", article: "los", type: "definite" },
+            { word: "estación", article: "la", type: "definite" },
+            { word: "aviónes", article: "los", type: "definite" },
+            { word: "carretera", article: "la", type: "definite" },
+            { word: "semáforo", article: "el", type: "definite" },
+            { word: "señales", article: "las", type: "definite" },
+            { word: "puentes", article: "los", type: "definite" },
+            { word: "torres", article: "las", type: "definite" },
+            { word: "hospital", article: "el", type: "definite" },
+            { word: "farmacias", article: "las", type: "definite" },
+            { word: "doctor", article: "el", type: "definite" },
+            { word: "doctoras", article: "las", type: "definite" },
+            { word: "enfermero", article: "el", type: "definite" },
+            { word: "enfermeras", article: "las", type: "definite" },
+            { word: "medicamentos", article: "los", type: "definite" },
+            { word: "medicinas", article: "las", type: "definite" },
+            { word: "fuego", article: "el", type: "definite" },
+            { word: "gasolina", article: "la", type: "definite" },
+            { word: "aceite", article: "el", type: "definite" },
+            { word: "electricidad", article: "la", type: "definite" },
+            { word: "viento", article: "el", type: "definite" },
+            { word: "lluvia", article: "la", type: "definite" },
+            { word: "trueno", article: "el", type: "definite" },
+            { word: "tormentas", article: "las", type: "definite" },
+            { word: "rayos", article: "los", type: "definite" },
+            { word: "nubes", article: "las", type: "definite" },
+            { word: "cielo", article: "el", type: "definite" },
+            { word: "tierra", article: "la", type: "definite" },
+            { word: "planeta", article: "el", type: "definite" },
+            { word: "galaxias", article: "las", type: "definite" },
+            { word: "universo", article: "el", type: "definite" },
+            { word: "estrellas", article: "las", type: "definite" },
+            { word: "espacios", article: "los", type: "definite" },
+            { word: "gravedad", article: "la", type: "definite" },
+            { word: "átomo", article: "el", type: "definite" },
+            { word: "molécula", article: "la", type: "definite" },
+            { word: "elemento", article: "el", type: "definite" },
+            { word: "tabla", article: "la", type: "definite" },
+            { word: "experimento", article: "el", type: "definite" },
+            { word: "ciencia", article: "la", type: "definite" },
+            { word: "científico", article: "el", type: "definite" },
+            { word: "científicas", article: "las", type: "definite" },
+            { word: "investigadores", article: "los", type: "definite" },
+            { word: "investigadoras", article: "las", type: "definite" },
+            { word: "laboratorio", article: "el", type: "definite" },
+            { word: "hipótesis", article: "la", type: "definite" },
+            { word: "conclusiónes", article: "las", type: "definite" },
+            { word: "debate", article: "el", type: "definite" },
+            { word: "discusión", article: "la", type: "definite" },
+            { word: "argumentos", article: "los", type: "definite" },
+            { word: "teorías", article: "las", type: "definite" },
+            { word: "hecho", article: "el", type: "definite" },
+            { word: "opinionés", article: "las", type: "definite" },
+            { word: "perspectivas", article: "las", type: "definite" },
+            { word: "errores", article: "los", type: "definite" },
+            { word: "corrección", article: "la", type: "definite" },
+            { word: "éxito", article: "el", type: "definite" },
+            { word: "victoria", article: "la", type: "definite" },
+            { word: "fracaso", article: "el", type: "definite" },
+            { word: "derrota", article: "la", type: "definite" },
+            { word: "juegos", article: "los", type: "definite" },
+            { word: "deporte", article: "el", type: "definite" },
+            { word: "competición", article: "la", type: "definite" },
+            { word: "equipos", article: "los", type: "definite" },
+            { word: "estrategias", article: "las", type: "definite" },
+            { word: "jugador", article: "el", type: "definite" },
+            { word: "jugadora", article: "la", type: "definite" },
+            { word: "árbitros", article: "los", type: "definite" },
+            { word: "reglas", article: "las", type: "definite" },
+            { word: "resultados", article: "los", type: "definite" },
+            { word: "final", article: "la", type: "definite" },
+            { word: "trofeo", article: "el", type: "definite" },
+            { word: "medallas", article: "las", type: "definite" },
+            { word: "oro", article: "el", type: "definite" },
+            { word: "plata", article: "la", type: "definite" },
+            { word: "bronce", article: "el", type: "definite" },
+            { word: "campeón", article: "el", type: "definite" },
+            { word: "campeona", article: "la", type: "definite" },
+            { word: "torneo", article: "el", type: "definite" },
+            { word: "ligas", article: "las", type: "definite" },
+            { word: "partido", article: "el", type: "definite" },
+            { word: "entrada", article: "la", type: "definite" },
+            { word: "estadio", article: "el", type: "definite" },
+            { word: "público", article: "el", type: "definite" },
+            { word: "afición", article: "la", type: "definite" },
+            { word: "perros", article: "unos", type: "indefinite" },
+            { word: "gatas", article: "unas", type: "indefinite" },
+            { word: "coche", article: "un", type: "indefinite" },
+            { word: "mesa", article: "una", type: "indefinite" },
+            { word: "gatos", article: "unos", type: "indefinite" },
+            { word: "sillas", article: "unas", type: "indefinite" },
+            { word: "árbol", article: "un", type: "indefinite" },
+            { word: "ventana", article: "una", type: "indefinite" },
+            { word: "sol", article: "un", type: "indefinite" },
+            { word: "luna", article: "una", type: "indefinite" },
+            { word: "agua", article: "un", type: "indefinite" },
+            { word: "estrellas", article: "unas", type: "indefinite" },
+            { word: "niño", article: "un", type: "indefinite" },
+            { word: "niña", article: "una", type: "indefinite" },
+            { word: "hombre", article: "un", type: "indefinite" },
+            { word: "mujer", article: "una", type: "indefinite" },
+            { word: "día", article: "un", type: "indefinite" },
+            { word: "noche", article: "una", type: "indefinite" },
+            { word: "zapatos", article: "unos", type: "indefinite" },
+            { word: "camisas", article: "unas", type: "indefinite" },
+            { word: "pantalones", article: "unos", type: "indefinite" },
+            { word: "falda", article: "una", type: "indefinite" },
+            { word: "pájaro", article: "un", type: "indefinite" },
+            { word: "flor", article: "una", type: "indefinite" },
+            { word: "pez", article: "un", type: "indefinite" },
+            { word: "mariposas", article: "unas", type: "indefinite" },
+            { word: "reloj", article: "un", type: "indefinite" },
+            { word: "campana", article: "una", type: "indefinite" },
+            { word: "río", article: "un", type: "indefinite" },
+            { word: "montaña", article: "una", type: "indefinite" },
+            { word: "mar", article: "un", type: "indefinite" },
+            { word: "playa", article: "una", type: "indefinite" },
+            { word: "bosque", article: "un", type: "indefinite" },
+            { word: "selva", article: "una", type: "indefinite" },
+            { word: "campo", article: "un", type: "indefinite" },
+            { word: "ciudad", article: "una", type: "indefinite" },
+            { word: "pueblo", article: "un", type: "indefinite" },
+            { word: "calle", article: "una", type: "indefinite" },
+            { word: "camino", article: "un", type: "indefinite" },
+            { word: "escuela", article: "una", type: "indefinite" },
+            { word: "profesor", article: "un", type: "indefinite" },
+            { word: "profesora", article: "una", type: "indefinite" },
+            { word: "estudiante", article: "un", type: "indefinite" },
+            { word: "estudiante", article: "una", type: "indefinite" },
+            { word: "cuaderno", article: "un", type: "indefinite" },
+            { word: "hoja", article: "una", type: "indefinite" },
+            { word: "bolígrafo", article: "un", type: "indefinite" },
+            { word: "pluma", article: "una", type: "indefinite" },
+            { word: "teléfono", article: "un", type: "indefinite" },
+            { word: "computadora", article: "una", type: "indefinite" },
+            { word: "teclado", article: "un", type: "indefinite" },
+            { word: "pantalla", article: "una", type: "indefinite" },
+            { word: "ratón", article: "un", type: "indefinite" },
+            { word: "impresora", article: "una", type: "indefinite" },
+            { word: "baño", article: "un", type: "indefinite" },
+            { word: "cocina", article: "una", type: "indefinite" },
+            { word: "comedor", article: "un", type: "indefinite" },
+            { word: "sala", article: "una", type: "indefinite" },
+            { word: "dormitorio", article: "un", type: "indefinite" },
+            { word: "cama", article: "una", type: "indefinite" },
+            { word: "armario", article: "un", type: "indefinite" },
+            { word: "lámpara", article: "una", type: "indefinite" },
+            { word: "cuadro", article: "un", type: "indefinite" },
+            { word: "alfombra", article: "una", type: "indefinite" },
+            { word: "espejo", article: "un", type: "indefinite" },
+            { word: "cortinas", article: "unas", type: "indefinite" },
+            { word: "jardín", article: "un", type: "indefinite" },
+            { word: "piscina", article: "una", type: "indefinite" },
+            { word: "techo", article: "un", type: "indefinite" },
+            { word: "pared", article: "una", type: "indefinite" },
+            { word: "piso", article: "un", type: "indefinite" },
+            { word: "puerta", article: "una", type: "indefinite" },
+            { word: "coches", article: "unos", type: "indefinite" },
+            { word: "bicicleta", article: "una", type: "indefinite" },
+            { word: "tren", article: "un", type: "indefinite" },
+            { word: "estación", article: "una", type: "indefinite" },
+            { word: "avión", article: "un", type: "indefinite" },
+            { word: "carretera", article: "una", type: "indefinite" },
+            { word: "semáforo", article: "un", type: "indefinite" },
+            { word: "señal", article: "una", type: "indefinite" },
+            { word: "puente", article: "un", type: "indefinite" },
+            { word: "torre", article: "una", type: "indefinite" },
+            { word: "hospital", article: "un", type: "indefinite" },
+            { word: "farmacia", article: "una", type: "indefinite" },
+            { word: "doctor", article: "un", type: "indefinite" },
+            { word: "doctora", article: "una", type: "indefinite" },
+            { word: "enfermeros", article: "unos", type: "indefinite" },
+            { word: "enfermeras", article: "unas", type: "indefinite" },
+            { word: "medicamento", article: "un", type: "indefinite" },
+            { word: "medicina", article: "una", type: "indefinite" },
+            { word: "fuego", article: "un", type: "indefinite" },
+            { word: "gasolina", article: "una", type: "indefinite" },
+            { word: "aceite", article: "un", type: "indefinite" },
+            { word: "electricidad", article: "una", type: "indefinite" },
+            { word: "viento", article: "un", type: "indefinite" },
+            { word: "lluvia", article: "una", type: "indefinite" },
+            { word: "tormenta", article: "una", type: "indefinite" },
+            { word: "rayo", article: "un", type: "indefinite" },
+            { word: "nubes", article: "unas", type: "indefinite" },
+            { word: "cielo", article: "un", type: "indefinite" },
+            { word: "tierra", article: "una", type: "indefinite" },
+            { word: "planeta", article: "un", type: "indefinite" },
+            { word: "galaxia", article: "una", type: "indefinite" },
+            { word: "universo", article: "un", type: "indefinite" },
+            { word: "estrellas", article: "unas", type: "indefinite" },
+            { word: "espacio", article: "un", type: "indefinite" },
+            { word: "gravedad", article: "una", type: "indefinite" },
+            { word: "átomo", article: "un", type: "indefinite" },
+            { word: "molécula", article: "una", type: "indefinite" },
+            { word: "elemento", article: "un", type: "indefinite" },
+            { word: "tabla", article: "una", type: "indefinite" },
+            { word: "experimento", article: "un", type: "indefinite" },
+            { word: "ciencia", article: "una", type: "indefinite" },
+            { word: "científico", article: "un", type: "indefinite" },
+            { word: "científica", article: "una", type: "indefinite" },
+            { word: "investigador", article: "un", type: "indefinite" },
+            { word: "investigadora", article: "una", type: "indefinite" },
+            { word: "laboratorio", article: "un", type: "indefinite" },
+            { word: "hipótesis", article: "una", type: "indefinite" },
+            { word: "resultado", article: "un", type: "indefinite" },
+            { word: "conclusión", article: "una", type: "indefinite" },
+            { word: "debate", article: "un", type: "indefinite" },
+            { word: "discusión", article: "una", type: "indefinite" },
+            { word: "argumento", article: "un", type: "indefinite" },
+            { word: "teoría", article: "una", type: "indefinite" },
+            { word: "hecho", article: "un", type: "indefinite" },
+            { word: "opinión", article: "una", type: "indefinite" },
+            { word: "punto", article: "un", type: "indefinite" },
+            { word: "perspectiva", article: "una", type: "indefinite" },
+            { word: "error", article: "un", type: "indefinite" },
+            { word: "corrección", article: "una", type: "indefinite" },
+            { word: "éxito", article: "un", type: "indefinite" },
+            { word: "victoria", article: "una", type: "indefinite" },
+            { word: "fracaso", article: "un", type: "indefinite" },
+            { word: "derrota", article: "una", type: "indefinite" },
+            { word: "juego", article: "un", type: "indefinite" },
+            { word: "partida", article: "una", type: "indefinite" },
+            { word: "deporte", article: "un", type: "indefinite" },
+            { word: "competición", article: "una", type: "indefinite" },
+            { word: "equipo", article: "un", type: "indefinite" },
+            { word: "estrategia", article: "una", type: "indefinite" },
+            { word: "jugador", article: "un", type: "indefinite" },
+            { word: "jugadora", article: "una", type: "indefinite" },
+            { word: "árbitro", article: "un", type: "indefinite" },
+            { word: "regla", article: "una", type: "indefinite" },
+            { word: "resultado", article: "un", type: "indefinite" },
+            { word: "final", article: "una", type: "indefinite" },
+            { word: "trofeo", article: "un", type: "indefinite" },
+            { word: "medalla", article: "una", type: "indefinite" },
+            { word: "oro", article: "un", type: "indefinite" },
+            { word: "plata", article: "una", type: "indefinite" },
+            { word: "bronce", article: "un", type: "indefinite" },
+            { word: "campeón", article: "un", type: "indefinite" },
+            { word: "campeona", article: "una", type: "indefinite" },
+            { word: "torneo", article: "un", type: "indefinite" },
+            { word: "liga", article: "una", type: "indefinite" },
+            { word: "partido", article: "un", type: "indefinite" },
+            { word: "entrada", article: "una", type: "indefinite" },
+            { word: "estadio", article: "un", type: "indefinite" },
+            { word: "gradas", article: "unas", type: "indefinite" },
+            { word: "público", article: "un", type: "indefinite" },
+            { word: "afición", article: "una", type: "indefinite" }
+        ];
+
+        let currentWord;
+        let score = 0;
+        let timer;
+        let userName;
+
+        function startGame() {
+            userName = document.getElementById('name').value;
+            if (!userName) {
+                alert('Por favor, ingresa tu nombre.');
+                return;
+            }
+            document.getElementById('start').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            score = 0;
+            document.getElementById('result').innerText = 'Número Correcto: 0';
+            document.getElementById('feedback').innerText = '';
+            startTimer();
+            nextWord();
+        }
+
+        function startTimer() {
+            let timeLeft = 120;
+            document.getElementById('timer').innerText = 'Tiempo: ' + timeLeft + ' segundos';
+            timer = setInterval(function() {
+                timeLeft--;
+                document.getElementById('timer').innerText = 'Tiempo: ' + timeLeft + ' segundos';
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function nextWord() {
+            const randomIndex = Math.floor(Math.random() * words.length);
+            currentWord = words[randomIndex];
+            document.getElementById('word').innerText = currentWord.word;
+            document.getElementById('type').innerText = `Tipo de artículo: ${currentWord.type === 'definite' ? 'Definido' : 'Indefinido'}`;
+        }
+
+        function checkAnswer(article) {
+            if (article === currentWord.article) {
+                score++;
+                document.getElementById('result').innerText = 'Número Correcto: ' + score;
+                document.getElementById('feedback').innerText = 'CORRECTO';
+            } else {
+                document.getElementById('feedback').innerText = 'Incorrecto. La respuesta correcta es: ' + currentWord.article;
+            }
+            // Call nextWord after showing feedback to allow time for user to see it
+            setTimeout(nextWord, 1000);
+        }
+
+        function endGame() {
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('end').style.display = 'block';
+            document.getElementById('finalMessage').innerText = '¡Muy Bien, ' + userName + '! ' + score + ' correcto';
+        }
+    </script>
+</body>
+</html>

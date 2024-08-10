@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HHS Grade Calculator 2.0</title>
+</head>
+<body>
+    <script>
+        function calculateGrade() {
+            var choice = document.getElementById("choice").value;
+            var finalExamPercentage = parseFloat(prompt("Enter the percentage the final exam counts towards the final average (e.g., 20 for 20%):")) / 100;
+
+            // Validate the final exam percentage
+            if (isNaN(finalExamPercentage) || finalExamPercentage < 0 || finalExamPercentage > 100) {
+                alert("Invalid final exam percentage. Please enter a valid percentage between 0 and 100.");
+                return;
+            }
+
+            // to calculate final average
+            if (choice == '1') {
+                var semesterAverage = parseFloat(prompt("Enter semester average:"));
+                var finalExamGrade = parseFloat(prompt("Enter final exam grade:"));
+                var finalAverage = ((1 - finalExamPercentage) * semesterAverage) + (finalExamPercentage * finalExamGrade);
+                alert("The final average is: " + finalAverage.toFixed(2));
+            }
+
+            // to calculate required exam grade
+            else if (choice == '2') {
+                var semesterAverage = parseFloat(prompt("Enter semester average:"));
+                var desiredFinalAverage = parseFloat(prompt("Enter desired final average:"));
+                var requiredExamGrade = (desiredFinalAverage - ((1 - finalExamPercentage) * semesterAverage)) / finalExamPercentage;
+                alert("To have a final average of " + desiredFinalAverage.toFixed(2) + ", the required exam grade is: " + requiredExamGrade.toFixed(2));
+            }
+
+            // to calculate desired semester average
+            else if (choice == '3') {
+                var desiredFinalAverage = parseFloat(prompt("Enter your desired final average:"));
+                var finalExamGrade = parseFloat(prompt("Enter your grade on the final exam:"));
+                var requiredSemesterAverage = (desiredFinalAverage - (finalExamPercentage * finalExamGrade)) / (1 - finalExamPercentage);
+                alert("To have a final average of " + desiredFinalAverage.toFixed(2) + ", the semester average needs to be " + requiredSemesterAverage.toFixed(2) + ".");
+            }
+
+            // if user enters invalid input
+            else {
+                alert("Invalid input. Please select '1', '2', or '3'.");
+            }
+        }
+    </script>
+
+    <h1>HHS Grade Calculator 2.0</h1>
+    <h4>Final Exam weight is set by user</h4>
+    <p>Choose scenario 1-3</p>
+    <select id="choice">
+        <option value="1">1. Find Final Average (What's my final grade?)</option>
+        <option value="2">2. Find required Exam Grade (What do I have to get on the exam to get a XX in the class?)</option>
+        <option value="3">3. Find desired Semester Average (What to I have to pull up my average up to in order to (pass/get a XX in) the class?)</option>
+    </select>
+    <button onclick="calculateGrade()">Calculate</button>
+</body>
+</html>

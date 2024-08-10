@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Señor Brock's Totally Awesome Random Student Caller</title>
+    <style>
+        #studentDisplay {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Señor Brock's Totally Awesome Random Student Caller</h1>
+    <p id="studentDisplay"></p>
+    <button onclick="callNextStudent()">Call Next Student</button>
+    <button onclick="reset()">Start Over</button>
+
+    <script>
+        let originalStudentList = [
+            "Dennis Jyreese",
+            "Echalico Christian",
+            "Henry Ja'Kiya",
+            "Miller Asia",
+            "Pitts Destiny",
+            "Davis Tatyana",
+            "Zapata Luciana",
+            "Burks Ra'Ziya",
+            "Ramirez Londy",
+            "Spinelli Emma"
+        ];
+
+        let studentList = [...originalStudentList]; // Create a copy of the original list
+
+        // Function to reverse the first and second words in a student's name
+        function reverseName(name) {
+            const [firstName, lastName] = name.split(' ');
+            return `${lastName} ${firstName}`;
+        }
+
+        function callNextStudent() {
+            if (studentList.length === 0) {
+                document.getElementById("studentDisplay").textContent = "All students have been called.";
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * studentList.length);
+            const randomStudent = studentList.splice(randomIndex, 1)[0];
+            const reversedStudent = reverseName(randomStudent);
+            document.getElementById("studentDisplay").textContent = `Calling on student: ${reversedStudent}`;
+        }
+
+        function reset() {
+            studentList = [...originalStudentList]; // Reset the list to the original
+            document.getElementById("studentDisplay").textContent = "";
+        }
+    </script>
+</body>
+</html>

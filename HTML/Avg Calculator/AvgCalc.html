@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HHS Grade Calculator</title>
+</head>
+<body>
+    <script>
+        function calculateGrade() {
+            var choice = document.getElementById("choice").value;
+
+            // to calculate final average
+            if (choice == '1') {
+                var semesterAverage = parseFloat(prompt("Enter semester average:"));
+                var finalExamGrade = parseFloat(prompt("Enter final exam grade:"));
+                var finalAverage = (0.2 * finalExamGrade) + (0.8 * semesterAverage);
+                alert("The final average is: " + finalAverage.toFixed(2));
+            }
+
+            // to calculate required exam grade
+            else if (choice == '2') {
+                var semesterAverage = parseFloat(prompt("Enter semester average:"));
+                var desiredFinalAverage = parseFloat(prompt("Enter desired final average:"));
+                var requiredExamGrade = (desiredFinalAverage - (0.8 * semesterAverage)) / 0.2;
+                alert("To have a final average of " + desiredFinalAverage.toFixed(2) + ", the required exam grade is: " + requiredExamGrade.toFixed(2));
+            }
+
+            // to calculate desired semester average
+            else if (choice == '3') {
+                var desiredFinalAverage = parseFloat(prompt("Enter your desired final average:"));
+                var finalExamGrade = parseFloat(prompt("Enter your grade on the final exam:"));
+                var requiredSemesterAverage = (desiredFinalAverage - (0.2 * finalExamGrade)) / 0.8;
+                alert("To have a final average of " + desiredFinalAverage.toFixed(2) + ", the semester average needs to be " + requiredSemesterAverage.toFixed(2) + ".");
+            }
+
+            // if user enters invalid input
+            else {
+                alert("Invalid input. Please select '1', '2', or '3'.");
+            }
+        }
+    </script>
+
+    <h1>HHS Grade Calculator</h1>
+
+    <p>Choose scenario 1-3</p>
+    <select id="choice">
+        <option value="1">1. Find Final Average (What's my final grade?)</option>
+        <option value="2">2. Find required Exam Grade (What do I have to get on the exam to get a XX in the class?)</option>
+        <option value="3">3. Find desired Semester Average (What to I have to pull up my average up to in order to (pass/get a XX in) the class?)</option>
+    </select>
+    <button onclick="calculateGrade()">Calculate</button>
+</body>
+</html>
+

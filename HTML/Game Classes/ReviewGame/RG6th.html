@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Randomizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .team {
+            margin: 10px 0;
+        }
+        .hidden {
+            display: none;
+        }
+        #timer {
+            font-size: 2em; /* Double the font size */
+        }
+    </style>
+</head>
+<body>
+    <h1>El Repaso de Jeopardy</h1>
+    <div id="teams"></div>
+    <button onclick="callRandomMember('Team 1')">Call Random Member from Team 1</button>
+    <button onclick="callRandomMember('Team 2')">Call Random Member from Team 2</button>
+    <p id="randomMember"></p>
+    <button onclick="startTimer()">Start 30-Second Timer</button>
+    <p id="timer"></p>
+
+    <script>
+        const names = [
+            "Bonola-Perez Karen",
+            "Calvo Amanda",
+            "Corte Maya",
+            "David Madison",
+            "Lackey Matthew",
+            "Mancilla-Pulido Christopher",
+            "Manuel-Cervantes Gerardo",
+            "Naasan Ibrahim",
+            "Patel Devraj",
+            "Rosado Gabriel",
+            "Simmons Amirah",
+            "Spivey Jordyn",
+            "Stone Andrea Tracy",
+            "Williams Karrine",
+            "Zapata Luci"
+        ];
+        let team1 = [];
+        let team2 = [];
+        let team1Queue = [];
+        let team2Queue = [];
+
+        function reverseNames() {
+            return names.map(name => {
+                let [lastName, firstName] = name.split(' ');
+                return `${firstName} ${lastName}`;
+            });
+        }
+
+        function divideTeams() {
+            const reversedNames = reverseNames();
+            for (let i = 0; i < reversedNames.length; i++) {
+                if (i % 2 === 0) {
+                    team1.push(reversedNames[i]);
+                } else {
+                    team2.push(reversedNames[i]);
+                }
+            }
+            team1Queue = [...team1];
+            team2Queue = [...team2];
+        }
+
+        function displayTeams() {
+            divideTeams();
+            const teamsDiv = document.getElementById('teams');
+            teamsDiv.innerHTML = `
+                <div class="team">
+                    <h2>Team 1</h2>
+                    <p>${team1.join(', ')}</p>
+                </div>
+                <div class="team">
+                    <h2>Team 2</h2>
+                    <p>${team2.join(', ')}</p>
+                </div>
+            `;
+        }
+
+        function callRandomMember(team) {
+            let queue;
+            if (team === 'Team 1') {
+                queue = team1Queue;
+            } else {
+                queue = team2Queue;
+            }
+            
+            if (queue.length === 0) {
+                document.getElementById('randomMember').innerText = `All members of ${team} have been called.`;
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * queue.length);
+            const randomMember = queue.splice(randomIndex, 1)[0];
+            document.getElementById('randomMember').innerText = `Random member from ${team}: ${randomMember}`;
+        }
+
+        function startTimer() {
+            let timeLeft = 30;
+            const timerElement = document.getElementById('timer');
+            timerElement.innerText = `Time left: ${timeLeft} seconds`;
+
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.innerText = `Time left: ${timeLeft} seconds`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerElement.innerText = 'Time is up!';
+                }
+            }, 1000);
+        }
+
+        // Display teams on page load
+        displayTeams();
+    </script>
+</body>
+</html>

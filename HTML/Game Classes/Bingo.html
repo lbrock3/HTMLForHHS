@@ -1,0 +1,105 @@
+El Juego de Bingo  <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-12">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Spanish Words</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #wordDisplay {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="wordDisplay">Press the button to see a word</div>
+<button onclick="showWord()">Show Word</button>
+
+<script>
+    const words = [
+        "las casas", "el perro", "el coche", "las mesas", "el gato", "la silla", "el árbol", "la ventana", 
+        "el sol", "la luna", "el agua", "la estrella", "el niño", "la niña", "el hombre", "la mujer", 
+        "el día", "la noche", "los zapatos", "la camisa", "el pantalón", "la falda", "el pájaro", "las flores", 
+        "el pez", "las mariposas", "los relojes", "la campana", "el río", "la montaña", "el mar", "la playa", 
+        "el bosque", "la selva", "el campo", "la ciudad", "el pueblo", "la calle", "el camino", "la escuela", 
+        "el profesor", "la profesora", "el estudiante", "la estudiante", "los estudiantes", "el cuaderno", 
+        "la hoja", "los bolígrafos", "las plumas", "el teléfono", "las computadoras", "el teclado", "la pantalla", 
+        "el ratón", "la impresora", "el baño", "la cocina", "el comedor", "la sala", "el dormitorio", "las camas", 
+        "el armario", "la lámpara", "el cuadro", "la alfombra", "el espejo", "las cortinas", "los jardines", 
+        "las piscinas", "el techo", "la pared", "el piso", "la puerta", "los coches", "las bicicletas", 
+        "los trenes", "la estación", "los aviónes", "la carretera", "el semáforo", "las señales", "los puentes", 
+        "las torres", "el hospital", "las farmacias", "el doctor", "las doctoras", "el enfermero", "las enfermeras", 
+        "los medicamentos", "las medicinas", "el fuego", "la gasolina", "el aceite", "la electricidad", 
+        "el viento", "la lluvia", "el trueno", "las tormentas", "los rayos", "las nubes", "el cielo", 
+        "la tierra", "el planeta", "las galaxias", "el universo", "las estrellas", "los espacios", "la gravedad", 
+        "el átomo", "la molécula", "el elemento", "la tabla", "el experimento", "la ciencia", "el científico", 
+        "las científicas", "los investigadores", "las investigadoras", "el laboratorio", "la hipótesis", 
+        "las conclusiones", "el debate", "la discusión", "los argumentos", "las teorías", "el hecho", 
+        "las opiniones", "las perspectivas", "los errores", "la corrección", "el éxito", "la victoria", 
+        "el fracaso", "la derrota", "los juegos", "el deporte", "la competición", "los equipos", "las estrategias", 
+        "el jugador", "la jugadora", "los árbitros", "las reglas", "los resultados", "la final", "el trofeo", 
+        "las medallas", "el oro", "la plata", "el bronce", "el campeón", "la campeona", "el torneo", "las ligas", 
+        "el partido", "la entrada", "el estadio", "el público", "la afición", "las celebraciones", "el gol", 
+        "la portería", "el balón", "la pelota", "los botes", "la raqueta", "el nadador", "las nadadoras", 
+        "el tenista", "la tenista", "el ciclista", "la ciclista", "el corredor", "el piloto", "la piloto", 
+        "los campeonatos", "las clasificaciones", "el entrenamiento", "la práctica", "el esfuerzo", 
+        "la dedicación", "el logro", "la meta", "el objetivo", "la ambición", "los sueños", "la realidad", 
+        "el futuro", "la esperanza", "el presente", "la memoria", "el recuerdo", "un libro", "una casa", 
+        "unos perros", "unas gatas", "un coche", "una mesa", "unos gatos", "unas sillas", "un árbol", 
+        "una ventana", "un sol", "una luna", "un agua", "unas estrellas", "un niño", "una niña", "un hombre", 
+        "una mujer", "un día", "una noche", "unos zapatos", "unas camisas", "unos pantalones", "una falda", 
+        "un pájaro", "una flor", "un pez", "unas mariposas", "un reloj", "una campana", "un río", "una montaña", 
+        "un mar", "una playa", "un bosque", "una selva", "un campo", "una ciudad", "un pueblo", "una calle", 
+        "un camino", "una escuela", "un profesor", "una profesora", "un estudiante", "una estudiante", 
+        "un cuaderno", "una hoja", "un bolígrafo", "una pluma", "un teléfono", "una computadora", "un teclado", 
+        "una pantalla", "un ratón", "una impresora", "un baño", "una cocina", "un comedor", "una sala", 
+        "un dormitorio", "una cama", "un armario", "una lámpara", "un cuadro", "una alfombra", "un espejo", 
+        "unas cortinas", "un jardín", "una piscina", "un techo", "una pared", "un piso", "una puerta", 
+        "unos coches", "una bicicleta", "un tren", "una estación", "un avión", "una carretera", "un semáforo", 
+        "una señal", "un puente", "una torre", "un hospital", "una farmacia", "un doctor", "una doctora", 
+        "unos enfermeros", "unas enfermeras", "un medicamento", "una medicina", "un fuego", "una gasolina", 
+        "un aceite", "una electricidad", "un viento", "una lluvia", "una tormenta", "un rayo", "unas nubes", 
+        "un cielo", "una tierra", "un planeta", "una galaxia", "un universo", "unas estrellas", "un espacio", 
+        "una gravedad", "un átomo", "una molécula", "un elemento", "una tabla", "un experimento", "una ciencia", 
+        "un científico", "una científica", "un investigador", "una investigadora", "un laboratorio", "una hipótesis", 
+        "un resultado", "una conclusión", "un debate", "una discusión", "un argumento", "una teoría", 
+        "un hecho", "una opinión", "un punto", "una perspectiva", "un error", "una corrección", "un éxito", 
+        "una victoria", "un fracaso", "una derrota", "un juego", "una partida", "un deporte", "una competición", 
+        "un equipo", "una estrategia", "un jugador", "una jugadora", "un árbitro", "una regla", "un resultado", 
+        "una final", "un trofeo", "una medalla", "un oro", "una plata", "un bronce", "un campeón", "una campeona", 
+        "un torneo", "una liga", "un partido", "una entrada", "un estadio", "unas gradas", "un público", "una afición"
+    ];
+
+    let usedWords = [];
+
+    function showWord() {
+        if (usedWords.length === words.length) {
+            usedWords = [];
+        }
+
+        let randomIndex;
+        let word;
+        
+        do {
+            randomIndex = Math.floor(Math.random() * words.length);
+            word = words[randomIndex];
+        } while (usedWords.includes(word));
+
+        usedWords.push(word);
+        document.getElementById("wordDisplay").innerText = word;
+    }
+</script>
+
+</body>
+</html>
