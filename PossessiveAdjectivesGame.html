@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Possessive Adjectives Practice</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --button-bg: #800020;
+            --button-text: white;
+            --correct-color: #4CAF50;
+            --incorrect-color: #f44336;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .mode-selection {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .mode-button {
+            padding: 10px 20px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-button.selected {
+            background-color: #4a0012;
+            transform: scale(1.05);
+        }
+
+        .sentence-display {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .feedback {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .feedback-correct {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--correct-color);
+        }
+
+        .feedback-incorrect {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--incorrect-color);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--button-bg);
+            transition: width 0.3s ease;
+            width: 100%;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .conjugation-table {
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .show-hint {
+            background-color: #f0f0f0;
+            color: var(--text-color);
+        }
+
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+
+        td, th {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            input[type="text"] {
+                width: 80%;
+            }
+            .mode-selection {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Spanish Possessive Adjectives Practice</h1>
+    
+    <!-- Mode Selection Section -->
+    <div id="modeSelection" class="container">
+        <h2>Spanish Possessive Adjectives Practice</h2>
+        <div class="mode-selection">
+            <button class="mode-button" onclick="selectMode('start')">Start Game</button>
+        </div>
+    </div>
+
+    <!-- Name Entry Section -->
+    <div id="nameEntry" class="container" style="display: none;">
+        <h2>Enter Your Name</h2>
+        <input type="text" id="playerName" placeholder="Your Name">
+        <button onclick="submitName()">Start Game</button>
+    </div>
+
+    <!-- Game Section -->
+    <div id="game" class="container" style="display: none;">
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <div class="timer" id="timer">Time: 2:00</div>
+        
+        <div class="sentence-display" id="sentenceDisplay"></div>
+
+        <div class="conjugation-input">
+            <input type="text" id="answer" placeholder="Type your answer">
+            <button onclick="submitAnswer()">Submit</button>
+        </div>
+        
+        <button class="show-hint" onclick="toggleHint()">Show/Hide Possessive Rules</button>
+        
+        <div class="conjugation-table" id="conjugationTable">
+            <h3>Spanish Possessive Adjectives</h3>
+            <table>
+                <tr>
+                    <th>Subject</th>
+                    <th>Masculine</th>
+                    <th>Feminine</th>
+                    <th>Masculine Plural</th>
+                    <th>Feminine Plural</th>
+                </tr>
+                <tr>
+                    <td>yo (my)</td>
+                    <td>mi</td>
+                    <td>mi</td>
+                    <td>mis</td>
+                    <td>mis</td>
+                </tr>
+                <tr>
+                    <td>tú (your)</td>
+                    <td>tu</td>
+                    <td>tu</td>
+                    <td>tus</td>
+                    <td>tus</td>
+                </tr>
+                <tr>
+                    <td>él (his)</td>
+                    <td>su</td>
+                    <td>su</td>
+                    <td>sus</td>
+                    <td>sus</td>
+                </tr>
+                <tr>
+                    <td>ella (her)</td>
+                    <td>su</td>
+                    <td>su</td>
+                    <td>sus</td>
+                    <td>sus</td>
+                </tr>
+                <tr>
+                    <td>usted (your formal)</td>
+                    <td>su</td>
+                    <td>su</td>
+                    <td>sus</td>
+                    <td>sus</td>
+                </tr>
+                <tr>
+                    <td>nosotros (our)</td>
+                    <td>nuestro</td>
+                    <td>nuestra</td>
+                    <td>nuestros</td>
+                    <td>nuestras</td>
+                </tr>
+                <tr>
+                    <td>ellos/ellas (their)</td>
+                    <td>su</td>
+                    <td>su</td>
+                    <td>sus</td>
+                    <td>sus</td>
+                </tr>
+                <tr>
+                    <td>ustedes (your pl.)</td>
+                    <td>su</td>
+                    <td>su</td>
+                    <td>sus</td>
+                    <td>sus</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div id="feedback" class="feedback"></div>
+        
+        <div class="stats">
+            <div id="score">Score: 0</div>
+            <div id="streak">Current Streak: 0</div>
+            <div id="highScore">Best Streak: 0</div>
+        </div>
+    </div>
+
+    <!-- End Game Section -->
+    <div id="end" class="container" style="display: none;">
+        <div id="finalMessage"></div>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+
+<script>
+    // Game state variables
+    let score = 0;
+    let streak = 0;
+    let bestStreak = 0;
+    let timer = null;
+    let timeLeft = 120; // 2 minutes
+    let startTime = null;
+    let gameActive = false;
+    let playerName = '';
+    let isProcessingAnswer = false;
+    let totalAttempts = 0;
+    let currentSentence = null;
+    let gameMode = null;
+
+    // Define the possessive adjectives
+    const singularPossessives = [
+        {
+            pronoun: "yo",
+            masculine: "mi",
+            feminine: "mi",
+            masculinePlural: "mis",
+            femininePlural: "mis",
+            example: "_____ libro",
+            examplePlural: "_____ libros",
+            femExample: "_____ casa",
+            femExamplePlural: "_____ casas",
+            translation: "my"
+        },
+        {
+            pronoun: "tú",
+            masculine: "tu",
+            feminine: "tu",
+            masculinePlural: "tus",
+            femininePlural: "tus",
+            example: "_____ carro",
+            examplePlural: "_____ carros",
+            femExample: "_____ mochila",
+            femExamplePlural: "_____ mochilas",
+            translation: "your"
+        },
+        {
+            pronoun: "él",
+            masculine: "su",
+            feminine: "su",
+            masculinePlural: "sus",
+            femininePlural: "sus",
+            example: "_____ teléfono",
+            examplePlural: "_____ teléfonos",
+            femExample: "_____ computadora",
+            femExamplePlural: "_____ computadoras",
+            translation: "his"
+        },
+        {
+            pronoun: "ella",
+            masculine: "su",
+            feminine: "su",
+            masculinePlural: "sus",
+            femininePlural: "sus",
+            example: "_____ perro",
+            examplePlural: "_____ perros",
+            femExample: "_____ gata",
+            femExamplePlural: "_____ gatas",
+            translation: "her"
+        },
+        {
+            pronoun: "usted",
+            masculine: "su",
+            feminine: "su",
+            masculinePlural: "sus",
+            femininePlural: "sus",
+            example: "_____ cuaderno",
+            examplePlural: "_____ cuadernos",
+            femExample: "_____ pluma",
+            femExamplePlural: "_____ plumas",
+            translation: "your (formal)"
+        }
+    ];
+
+    const pluralPossessives = [
+        {
+            pronoun: "nosotros",
+            masculine: "nuestro",
+            feminine: "nuestra",
+            masculinePlural: "nuestros",
+            femininePlural: "nuestras",
+            example: "_____ profesor",
+            examplePlural: "_____ profesores",
+            femExample: "_____ profesora",
+            femExamplePlural: "_____ profesoras",
+            translation: "our"
+        },
+        {
+            pronoun: "ellos",
+            masculine: "su",
+            feminine: "su",
+            masculinePlural: "sus",
+            femininePlural: "sus",
+            example: "_____ amigo",
+            examplePlural: "_____ amigos",
+            femExample: "_____ amiga",
+            femExamplePlural: "_____ amigas",
+            translation: "their"
+        },
+        {
+            pronoun: "ellas",
+            masculine: "su",
+            feminine: "su",
+            masculinePlural: "sus",
+            femininePlural: "sus",
+            example: "_____ hermano",
+            examplePlural: "_____ hermanos",
+            femExample: "_____ hermana",
+            femExamplePlural: "_____ hermanas",
+            translation: "their"
+        },
+        {
+            pronoun: "ustedes",
+            masculine: "su",
+            feminine: "su",
+            masculinePlural: "sus",
+            femininePlural: "sus",
+            example: "_____ hijo",
+            examplePlural: "_____ hijos",
+            femExample: "_____ hija",
+            femExamplePlural: "_____ hijas",
+            translation: "your (plural formal)"
+        }
+    ];
+
+    function selectMode(mode) {
+        gameMode = 'both'; // Always set to both
+        
+        document.getElementById('modeSelection').style.display = 'none';
+        document.getElementById('nameEntry').style.display = 'block';
+        document.getElementById('playerName').focus();
+    }
+
+    function generateQuestion() {
+        // Combine both arrays for all questions
+        const allPossessives = [...singularPossessives, ...pluralPossessives];
+        
+        currentSentence = allPossessives[Math.floor(Math.random() * allPossessives.length)];
+        const isPlural = Math.random() < 0.5;
+        const isFeminine = Math.random() < 0.5;
+        
+        let example, expectedAnswer;
+        if (isPlural) {
+            example = isFeminine ? currentSentence.femExamplePlural : currentSentence.examplePlural;
+            expectedAnswer = isFeminine ? currentSentence.femininePlural : currentSentence.masculinePlural;
+        } else {
+            example = isFeminine ? currentSentence.femExample : currentSentence.example;
+            expectedAnswer = isFeminine ? currentSentence.feminine : currentSentence.masculine;
+        }
+        
+        const display = document.getElementById('sentenceDisplay');
+        display.innerHTML = `
+            <p><strong>Subject Pronoun:</strong> ${currentSentence.pronoun}</p>
+            <p><strong>English:</strong> ${currentSentence.translation}</p>
+            <p><strong>Sentence:</strong> ${example}</p>
+        `;
+        
+        currentSentence.expectedAnswer = expectedAnswer;
+    }
+
+    function submitName() {
+        console.log("submitName called"); // Debug log
+        const nameInput = document.getElementById('playerName');
+        playerName = nameInput.value.trim();
+        
+        if (!playerName) {
+            alert('Please enter your name to start');
+            nameInput.focus();
+            return;
+        }
+        
+        document.getElementById('nameEntry').style.display = 'none';
+        document.getElementById('game').style.display = 'block';
+        startGame();
+    }
+
+    function startGame() {
+        console.log("startGame called"); // Debug log
+        resetGameState();
+        score = 0;
+        streak = 0;
+        totalAttempts = 0;
+        gameActive = true;
+        
+        updateDisplay();
+        startTimer();
+        nextQuestion();
+    }
+
+    function updateDisplay() {
+        document.getElementById('score').textContent = `Score: ${score}`;
+        document.getElementById('streak').textContent = `Current Streak: ${streak}`;
+        document.getElementById('highScore').textContent = `Best Streak: ${bestStreak}`;
+    }
+
+    function startTimer() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+
+        startTime = Date.now();
+        timeLeft = 120; // 2 minutes
+        
+        updateTimer();
+
+        timer = setInterval(() => {
+            const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+            timeLeft = Math.max(120 - elapsedSeconds, 0);
+            
+            updateTimer();
+            
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }, 100);
+    }
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        const timerDisplay = document.getElementById('timer');
+        if (timerDisplay) {
+            timerDisplay.textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        const progressFill = document.getElementById('progressFill');
+        if (progressFill) {
+            const percentageLeft = (timeLeft / 120) * 100;
+            progressFill.style.width = `${percentageLeft}%`;
+        }
+    }
+
+    function submitAnswer() {
+        if (!gameActive || isProcessingAnswer) return;
+        
+        isProcessingAnswer = true;
+        totalAttempts++;
+        
+        const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+        const correctAnswer = currentSentence.expectedAnswer.toLowerCase();
+        
+        // Clear the input box
+        document.getElementById('answer').value = '';
+        
+        if (userAnswer === correctAnswer) {
+            score++;
+            streak++;
+            showFeedback('¡Correcto! 🎉', true);
+        } else {
+            streak = 0;
+            showFeedback(`Incorrect. The correct answer is: ${correctAnswer}`, false);
+        }
+        
+        if (streak > bestStreak) {
+            bestStreak = streak;
+            localStorage.setItem('possessiveAdjectivesGameBestStreak', bestStreak);
+        }
+
+        updateDisplay();
+        
+        if (window.nextQuestionTimeout) {
+            clearTimeout(window.nextQuestionTimeout);
+        }
+        
+        window.nextQuestionTimeout = setTimeout(() => {
+            if (gameActive) {
+                nextQuestion();
+            }
+        }, 2000);
+    }
+
+    function showFeedback(message, isCorrect) {
+        const feedback = document.getElementById('feedback');
+        feedback.textContent = message;
+        feedback.className = `feedback ${isCorrect ? 'feedback-correct' : 'feedback-incorrect'}`;
+    }
+
+    function endGame() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+        
+        gameActive = false;
+        
+        document.getElementById('game').style.display = 'none';
+        document.getElementById('end').style.display = 'block';
+        
+        const percentage = totalAttempts > 0 ? Math.round((score / totalAttempts) * 100) : 0;
+        
+        const finalMessage = document.getElementById('finalMessage');
+        finalMessage.innerHTML = `
+            <h2>¡Tiempo!</h2>
+            <h3>Results for ${playerName}:</h3>
+            <div class="results">
+                <p><strong>Final Score:</strong> ${score}</p>
+                <p><strong>Best Streak:</strong> ${bestStreak}</p>
+                <p><strong>Accuracy:</strong> ${percentage}%</p>
+                <p><strong>Total Attempts:</strong> ${totalAttempts}</p>
+            </div>
+        `;
+    }
+
+    function resetGameState() {
+        if (window.nextQuestionTimeout) {
+            clearTimeout(window.nextQuestionTimeout);
+            window.nextQuestionTimeout = null;
+        }
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+        
+        startTime = null;
+        timeLeft = 120;
+        isProcessingAnswer = false;
+        gameActive = true;
+        
+        document.getElementById('answer').value = '';
+        document.getElementById('feedback').textContent = '';
+        document.getElementById('conjugationTable').style.display = 'none';
+    }
+
+    function toggleHint() {
+        const table = document.getElementById('conjugationTable');
+        table.style.display = table.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function restartGame() {
+        document.getElementById('end').style.display = 'none';
+        document.getElementById('modeSelection').style.display = 'block';
+        document.getElementById('playerName').value = '';
+        gameMode = null;
+        document.querySelectorAll('.mode-button').forEach(button => {
+            button.classList.remove('selected');
+        });
+    }
+
+    function nextQuestion() {
+        if (!gameActive) return;
+        
+        isProcessingAnswer = false;
+        generateQuestion();
+        document.getElementById('answer').focus();
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('playerName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitName();
+            }
+        });
+
+        document.getElementById('answer').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !isProcessingAnswer) {
+                e.preventDefault();
+                submitAnswer();
+            }
+        });
+
+        const savedBestStreak = localStorage.getItem('possessiveAdjectivesGameBestStreak');
+        if (savedBestStreak) {
+            bestStreak = parseInt(savedBestStreak);
+        }
+    });
+</script>
+</body>
+</html> 

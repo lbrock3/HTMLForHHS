@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Señor Brock's Spanish Por vs Para Game</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --button-bg: #800020;
+            --button-text: white;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        h1, h2, h3 {
+            font-family: 'Impact', sans-serif;
+            color: var(--text-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .sentence-display {
+            font-size: 24px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .choice-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .choice-button {
+            font-size: 1.2em;
+            min-width: 100px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--button-bg);
+            transition: width 0.3s ease;
+        }
+
+        .feedback-correct {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .feedback-incorrect {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .results {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .results p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .results strong {
+            color: var(--button-bg);
+        }
+
+        .translation {
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Spanish Por vs Para Practice</h1>
+
+    <div id="nameInput" class="container">
+        <h2>Welcome!</h2>
+        <p>Practice choosing between por and para in Spanish sentences.</p>
+        <div class="input-container">
+            <input type="text" id="playerName" placeholder="Enter your name">
+            <button onclick="submitName()">Start</button>
+        </div>
+        <p class="enter-hint">Press Enter to Start</p>
+    </div>
+
+    <!-- Game interface -->
+    <div id="game" class="container" style="display: none;">
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <div class="timer" id="timer">Time: 2:00</div>
+        
+        <div class="sentence-display">
+            <div id="sentence"></div>
+            <div id="translation" class="translation"></div>
+        </div>
+
+        <div class="choice-buttons">
+            <button onclick="submitAnswer('por')" class="choice-button">POR</button>
+            <button onclick="submitAnswer('para')" class="choice-button">PARA</button>
+        </div>
+        
+        <div id="feedback" class="feedback"></div>
+        
+        <div class="stats">
+            <div id="score">Score: 0</div>
+            <div id="streak">Current Streak: 0</div>
+            <div id="highScore">Best Streak: 0</div>
+        </div>
+    </div>
+
+    <!-- End game screen -->
+    <div id="end" class="container" style="display: none;">
+        <div id="finalMessage"></div>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+
+    <script>
+        // Define the sentences and their correct answers
+        const sentences = [
+            {
+                text: "Estudio español _____ aprobar el examen.",
+                translation: "I study Spanish to pass the exam.",
+                answer: "para"
+            },
+            {
+                text: "Gracias _____ tu ayuda.",
+                translation: "Thank you for your help.",
+                answer: "por"
+            },
+            {
+                text: "Este regalo es _____ ti.",
+                translation: "This gift is for you.",
+                answer: "para"
+            },
+            {
+                text: "Voy a la tienda _____ pan.",
+                translation: "I'm going to the store for bread.",
+                answer: "por"
+            },
+            {
+                text: "_____ fin terminé mi tarea.",
+                translation: "Finally (At last) I finished my homework.",
+                answer: "por"
+            },
+            {
+                text: "Este avión sale _____ Madrid.",
+                translation: "This plane departs for Madrid.",
+                answer: "para"
+            },
+            {
+                text: "Camino _____ el parque todos los días.",
+                translation: "I walk through the park every day.",
+                answer: "por"
+            },
+            {
+                text: "Lo hice _____ mi familia.",
+                translation: "I did it for my family.",
+                answer: "por"
+            },
+            {
+                text: "Este libro es _____ principiantes.",
+                translation: "This book is for beginners.",
+                answer: "para"
+            },
+            {
+                text: "_____ la mañana me gusta tomar café.",
+                translation: "In the morning I like to drink coffee.",
+                answer: "por"
+            },
+            {
+                text: "Estoy aquí _____ ayudarte.",
+                translation: "I'm here to help you.",
+                answer: "para"
+            },
+            {
+                text: "Lo compré _____ diez dólares.",
+                translation: "I bought it for ten dollars.",
+                answer: "por"
+            },
+            {
+                text: "_____ ejemplo, podemos estudiar juntos.",
+                translation: "For example, we can study together.",
+                answer: "por"
+            },
+            {
+                text: "La fecha límite es _____ el viernes.",
+                translation: "The deadline is for Friday.",
+                answer: "para"
+            },
+            {
+                text: "Paso _____ la biblioteca.",
+                translation: "I pass by the library.",
+                answer: "por"
+            },
+            {
+                text: "Trabajo _____ ganar dinero.",
+                translation: "I work to earn money.",
+                answer: "para"
+            },
+            {
+                text: "El tren pasa _____ mi casa.",
+                translation: "The train passes by my house.",
+                answer: "por"
+            },
+            {
+                text: "_____ ahora, no hay problemas.",
+                translation: "For now, there are no problems.",
+                answer: "por"
+            },
+            {
+                text: "Este mensaje es _____ Juan.",
+                translation: "This message is for Juan.",
+                answer: "para"
+            },
+            {
+                text: "Voy al supermercado _____ la calle principal.",
+                translation: "I go to the supermarket via the main street.",
+                answer: "por"
+            },
+            {
+                text: "_____ ser sincero, no me gusta.",
+                translation: "To be honest, I don't like it.",
+                answer: "para"
+            },
+            {
+                text: "Lo hice _____ accidente.",
+                translation: "I did it by accident.",
+                answer: "por"
+            },
+            {
+                text: "Esta comida es _____ llevar.",
+                translation: "This food is to go.",
+                answer: "para"
+            },
+            {
+                text: "Estoy preocupado _____ ti.",
+                translation: "I am worried about you.",
+                answer: "por"
+            },
+            {
+                text: "_____ la tarde me gusta descansar.",
+                translation: "In the afternoon I like to rest.",
+                answer: "por"
+            },
+            {
+                text: "Este regalo es _____ tu cumpleaños.",
+                translation: "This gift is for your birthday.",
+                answer: "para"
+            },
+            {
+                text: "Paso _____ tu casa todos los días.",
+                translation: "I pass by your house every day.",
+                answer: "por"
+            },
+            {
+                text: "_____ suerte, llegué a tiempo.",
+                translation: "Luckily (By luck), I arrived on time.",
+                answer: "por"
+            },
+            {
+                text: "Esta medicina es _____ el dolor de cabeza.",
+                translation: "This medicine is for the headache.",
+                answer: "para"
+            },
+            {
+                text: "Te cambio mi libro _____ el tuyo.",
+                translation: "I'll trade my book for yours.",
+                answer: "por"
+            },
+            {
+                text: "_____ favor, ayúdame.",
+                translation: "Please (for favor), help me.",
+                answer: "por"
+            },
+            {
+                text: "Esto es _____ mañana.",
+                translation: "This is for tomorrow.",
+                answer: "para"
+            },
+            {
+                text: "Viajo _____ el mundo.",
+                translation: "I travel around the world.",
+                answer: "por"
+            },
+            {
+                text: "_____ lo general, como a las dos.",
+                translation: "Generally (In general), I eat at two.",
+                answer: "por"
+            },
+            {
+                text: "Esta tarea es _____ el lunes.",
+                translation: "This homework is for Monday.",
+                answer: "para"
+            }
+        ];
+
+        // Game state variables
+        let currentSentenceIndex;
+        let score = 0;
+        let streak = 0;
+        let bestStreak = 0;
+        let timer;
+        let timeLeft;
+        let gameActive = false;
+        let playerName = '';
+        let totalAttempts = 0;
+
+        function submitName() {
+            const nameInput = document.getElementById('playerName');
+            playerName = nameInput.value.trim();
+            if (playerName) {
+                document.getElementById('nameInput').style.display = 'none';
+                document.getElementById('game').style.display = 'block';
+                startGame();
+            } else {
+                alert('Please enter your name to start');
+                nameInput.focus();
+            }
+        }
+
+        function startGame() {
+            score = 0;
+            streak = 0;
+            totalAttempts = 0;
+            timeLeft = 120; // 2 minutes
+            gameActive = true;
+            updateDisplay();
+            startTimer();
+            nextSentence();
+        }
+
+        function nextSentence() {
+            if (!gameActive) return;
+            
+            currentSentenceIndex = Math.floor(Math.random() * sentences.length);
+            const currentSentence = sentences[currentSentenceIndex];
+            
+            document.getElementById('sentence').textContent = currentSentence.text;
+            document.getElementById('translation').textContent = currentSentence.translation;
+        }
+
+        function submitAnswer(answer) {
+            if (!gameActive) return;
+
+            totalAttempts++;
+            const currentSentence = sentences[currentSentenceIndex];
+            
+            if (answer === currentSentence.answer) {
+                score++;
+                streak++;
+                if (streak > bestStreak) {
+                    bestStreak = streak;
+                    localStorage.setItem('porParaGameBestStreak', bestStreak);
+                }
+                showFeedback(true);
+            } else {
+                streak = 0;
+                showFeedback(false, currentSentence.answer);
+            }
+            
+            updateDisplay();
+            setTimeout(nextSentence, 1500);
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const percent = (timeLeft / 120) * 100;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+        }
+
+        function showFeedback(correct, correctAnswer = '') {
+            const feedback = document.getElementById('feedback');
+            if (correct) {
+                feedback.textContent = '¡Correcto!';
+                feedback.className = 'feedback-correct';
+            } else {
+                feedback.textContent = `Incorrect. The correct answer is: ${correctAnswer}`;
+                feedback.className = 'feedback-incorrect';
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').textContent = `Score: ${score}`;
+            document.getElementById('streak').textContent = `Current Streak: ${streak}`;
+            document.getElementById('highScore').textContent = `Best Streak: ${bestStreak}`;
+        }
+
+        function endGame() {
+            clearInterval(timer);
+            gameActive = false;
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('end').style.display = 'block';
+            
+            const percentage = totalAttempts > 0 ? Math.round((score / totalAttempts) * 100) : 0;
+            
+            const finalMessage = document.getElementById('finalMessage');
+            finalMessage.innerHTML = `
+                <h2>¡Tiempo!</h2>
+                <h3>Results for ${playerName}:</h3>
+                <div class="results">
+                    <p><strong>Final Score:</strong> ${score}</p>
+                    <p><strong>Best Streak:</strong> ${bestStreak}</p>
+                    <p><strong>Accuracy:</strong> ${percentage}%</p>
+                    <p><strong>Total Attempts:</strong> ${totalAttempts}</p>
+                </div>
+            `;
+        }
+
+        function restartGame() {
+            document.getElementById('end').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            startGame();
+        }
+
+        // Keyboard shortcuts for por/para selection
+        document.addEventListener('keydown', (e) => {
+            if (!gameActive) {
+                if (e.key === 'Enter' && document.activeElement === document.getElementById('playerName')) {
+                    submitName();
+                }
+                return;
+            }
+            
+            switch(e.key.toLowerCase()) {
+                case 'o': // 'o' for por
+                    submitAnswer('por');
+                    break;
+                case 'a': // 'a' for para
+                    submitAnswer('para');
+                    break;
+            }
+        });
+
+        // Load high score on startup
+        if (localStorage.getItem('porParaGameBestStreak')) {
+            bestStreak = parseInt(localStorage.getItem('porParaGameBestStreak'));
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('playerName').focus();
+        });
+    </script>
+</body>
+</html> 

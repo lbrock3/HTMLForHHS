@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish IR (To Go) Verb Practice</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --button-bg: #800020;
+            --button-text: white;
+            --correct-color: #4CAF50;
+            --incorrect-color: #f44336;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .sentence-display {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+
+        .verb-blank {
+            color: var(--button-bg);
+            font-weight: bold;
+            border-bottom: 2px solid var(--button-bg);
+            padding: 0 5px;
+        }
+
+        .conjugation-input {
+            margin: 20px 0;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .feedback {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .feedback-correct {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--correct-color);
+        }
+
+        .feedback-incorrect {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--incorrect-color);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--button-bg);
+            transition: width 0.3s ease;
+            width: 100%;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .conjugation-table {
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .show-hint {
+            background-color: #f0f0f0;
+            color: var(--text-color);
+        }
+
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            input[type="text"] {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Spanish IR Verb Practice</h1>
+    
+    <!-- Name Entry Section -->
+    <div id="nameEntry" class="container">
+        <h2>Enter Your Name</h2>
+        <input type="text" id="playerName" placeholder="Your Name">
+        <button onclick="submitName()">Start Game</button>
+    </div>
+
+    <!-- Game Section -->
+    <div id="game" class="container" style="display: none;">
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <div class="timer" id="timer">Time: 3:00</div>
+        
+        <div class="sentence-display" id="sentenceDisplay"></div>
+
+        <div class="conjugation-input">
+            <input type="text" id="answer" placeholder="Type your answer">
+            <button onclick="submitAnswer()">Submit</button>
+        </div>
+        
+        <button class="show-hint" onclick="toggleHint()">Show/Hide Conjugation Table</button>
+        
+        <div class="conjugation-table" id="conjugationTable">
+            <h3>Present Tense Conjugation of IR</h3>
+            <table>
+                <tr><td>yo</td><td>voy</td></tr>
+                <tr><td>tú</td><td>vas</td></tr>
+                <tr><td>él/ella/usted</td><td>va</td></tr>
+                <tr><td>nosotros</td><td>vamos</td></tr>
+                <tr><td>ellos/ellas/ustedes</td><td>van</td></tr>
+            </table>
+        </div>
+        
+        <div id="feedback" class="feedback"></div>
+        
+        <div class="stats">
+            <div id="score">Score: 0</div>
+            <div id="streak">Current Streak: 0</div>
+            <div id="highScore">Best Streak: 0</div>
+        </div>
+    </div>
+
+    <!-- End Game Section -->
+    <div id="end" class="container" style="display: none;">
+        <div id="finalMessage"></div>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+
+<script>
+    // Game state variables
+    let score = 0;
+    let streak = 0;
+    let bestStreak = 0;
+    let timer = null;
+    let timeLeft = 180; // 3 minutes
+    let startTime = null;
+    let gameActive = false;
+    let playerName = '';
+    let isProcessingAnswer = false;
+    let totalAttempts = 0;
+    let currentSentence = null;
+
+    // Practice sentences with their correct conjugations
+    const sentences = [
+        {
+            text: "Yo _____ al parque.",
+            subject: "yo",
+            answer: "voy",
+            translation: "I go to the park."
+        },
+        {
+            text: "Tú _____ a la tienda.",
+            subject: "tú",
+            answer: "vas",
+            translation: "You go to the store."
+        },
+        {
+            text: "Él _____ al cine.",
+            subject: "él",
+            answer: "va",
+            translation: "He goes to the cinema."
+        },
+        {
+            text: "Ella _____ a la escuela.",
+            subject: "ella",
+            answer: "va",
+            translation: "She goes to school."
+        },
+        {
+            text: "Nosotros _____ al gimnasio.",
+            subject: "nosotros",
+            answer: "vamos",
+            translation: "We go to the gym."
+        },
+        {
+            text: "Vosotros _____ al restaurante.",
+            subject: "vosotros",
+            answer: "vais",
+            translation: "You all go to the restaurant."
+        },
+        {
+            text: "Ellos _____ a la biblioteca.",
+            subject: "ellos",
+            answer: "van",
+            translation: "They go to the library."
+        },
+        {
+            text: "Ellas _____ al supermercado.",
+            subject: "ellas",
+            answer: "van",
+            translation: "They go to the supermarket."
+        },
+        {
+            text: "Usted _____ a la oficina.",
+            subject: "usted",
+            answer: "va",
+            translation: "You (formal) go to the office."
+        },
+        {
+            text: "Ustedes _____ al hospital.",
+            subject: "ustedes",
+            answer: "van",
+            translation: "You all go to the hospital."
+        },
+        {
+            text: "_____ a la playa.",
+            subject: "yo",
+            answer: "voy",
+            translation: "I go to the beach."
+        },
+        {
+            text: "_____ al museo.",
+            subject: "tú",
+            answer: "vas",
+            translation: "You go to the museum."
+        },
+        {
+            text: "_____ al estadio.",
+            subject: "él",
+            answer: "va",
+            translation: "He/She goes to the stadium."
+        },
+        {
+            text: "_____ a la montaña.",
+            subject: "nosotros",
+            answer: "vamos",
+            translation: "We go to the mountain."
+        },
+        {
+            text: "_____ al zoológico.",
+            subject: "ellos",
+            answer: "van",
+            translation: "They go to the zoo."
+        },
+        {
+            text: "Yo _____ al supermercado.",
+            subject: "yo",
+            answer: "voy",
+            translation: "I go to the supermarket."
+        },
+        {
+            text: "¿Tú _____ a la escuela?",
+            subject: "tú",
+            answer: "vas",
+            translation: "Do you go to school?"
+        },
+        {
+            text: "María _____ al trabajo en bus.",
+            subject: "ella",
+            answer: "va",
+            translation: "Maria goes to work by bus."
+        },
+        {
+            text: "Nosotros _____ al parque los domingos.",
+            subject: "nosotros",
+            answer: "vamos",
+            translation: "We go to the park on Sundays."
+        },
+        {
+            text: "¿Vosotros _____ a la playa este verano?",
+            subject: "vosotros",
+            answer: "vais",
+            translation: "Are you all going to the beach this summer?"
+        },
+        {
+            text: "Ellos _____ al gimnasio cada día.",
+            subject: "ellos",
+            answer: "van",
+            translation: "They go to the gym every day."
+        },
+        {
+            text: "Usted _____ al médico mañana.",
+            subject: "usted",
+            answer: "va",
+            translation: "You (formal) go to the doctor tomorrow."
+        },
+        {
+            text: "Los estudiantes _____ a la biblioteca.",
+            subject: "ellos",
+            answer: "van",
+            translation: "The students go to the library."
+        },
+        {
+            text: "Mi familia y yo _____ de vacaciones.",
+            subject: "nosotros",
+            answer: "vamos",
+            translation: "My family and I go on vacation."
+        },
+        {
+            text: "¿Ustedes _____ a la fiesta?",
+            subject: "ustedes",
+            answer: "van",
+            translation: "Are you all (formal) going to the party?"
+        }
+    ].filter(sentence => !sentence.subject.includes('vosotros'));
+
+    function generateQuestion() {
+        if (!gameActive) return;
+
+        currentSentence = sentences[Math.floor(Math.random() * sentences.length)];
+        document.getElementById('sentenceDisplay').innerHTML = 
+            `<p>${currentSentence.text}</p>
+             <p class="translation">${currentSentence.translation}</p>`;
+        
+        document.getElementById('answer').value = '';
+        document.getElementById('feedback').textContent = '';
+    }
+
+    function submitAnswer() {
+        if (!gameActive || isProcessingAnswer) return;
+        
+        isProcessingAnswer = true;
+        totalAttempts++;
+
+        const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+        const correctAnswer = currentSentence.answer.toLowerCase();
+        const isCorrect = userAnswer === correctAnswer;
+
+        if (isCorrect) {
+            score++;
+            streak++;
+            showFeedback(`¡Correcto! "${currentSentence.subject} ${correctAnswer}" is correct.`, true);
+        } else {
+            streak = 0;
+            showFeedback(`Incorrect. The correct answer is "${correctAnswer}" for "${currentSentence.subject}".`, false);
+        }
+
+        if (streak > bestStreak) {
+            bestStreak = streak;
+            localStorage.setItem('irVerbGameBestStreak', bestStreak);
+        }
+
+        updateDisplay();
+        
+        if (window.nextQuestionTimeout) {
+            clearTimeout(window.nextQuestionTimeout);
+        }
+        
+        window.nextQuestionTimeout = setTimeout(() => {
+            if (gameActive) {
+                nextQuestion();
+            }
+        }, 2000);
+    }
+
+    function showFeedback(message, isCorrect) {
+        const feedback = document.getElementById('feedback');
+        feedback.textContent = message;
+        feedback.className = `feedback ${isCorrect ? 'feedback-correct' : 'feedback-incorrect'}`;
+    }
+
+    function startGame() {
+        resetGameState();
+        score = 0;
+        streak = 0;
+        totalAttempts = 0;
+        gameActive = true;
+        
+        updateDisplay();
+        startTimer();
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        if (!gameActive) return;
+        
+        isProcessingAnswer = false;
+        generateQuestion();
+        document.getElementById('answer').focus();
+    }
+
+    function startTimer() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+
+        startTime = Date.now();
+        timeLeft = 180; // 3 minutes
+        
+        updateTimer();
+
+        timer = setInterval(() => {
+            const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+            timeLeft = Math.max(180 - elapsedSeconds, 0);
+            
+            updateTimer();
+            
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }, 100);
+    }
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        const timerDisplay = document.getElementById('timer');
+        if (timerDisplay) {
+            timerDisplay.textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        const progressFill = document.getElementById('progressFill');
+        if (progressFill) {
+            const percentageLeft = (timeLeft / 180) * 100;
+            progressFill.style.width = `${percentageLeft}%`;
+        }
+    }
+
+    function updateDisplay() {
+        document.getElementById('score').textContent = `Score: ${score}`;
+        document.getElementById('streak').textContent = `Current Streak: ${streak}`;
+        document.getElementById('highScore').textContent = `Best Streak: ${bestStreak}`;
+    }
+
+    function submitName() {
+        const nameInput = document.getElementById('playerName');
+        playerName = nameInput.value.trim();
+        if (!playerName) {
+            alert('Please enter your name to start');
+            nameInput.focus();
+            return;
+        }
+        
+        document.getElementById('nameEntry').style.display = 'none';
+        document.getElementById('game').style.display = 'block';
+        startGame();
+    }
+
+    function endGame() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+        
+        gameActive = false;
+        
+        document.getElementById('game').style.display = 'none';
+        document.getElementById('end').style.display = 'block';
+        
+        const percentage = totalAttempts > 0 ? Math.round((score / totalAttempts) * 100) : 0;
+        
+        const finalMessage = document.getElementById('finalMessage');
+        finalMessage.innerHTML = `
+            <h2>¡Tiempo!</h2>
+            <h3>Results for ${playerName}:</h3>
+            <div class="results">
+                <p><strong>Final Score:</strong> ${score}</p>
+                <p><strong>Best Streak:</strong> ${bestStreak}</p>
+                <p><strong>Accuracy:</strong> ${percentage}%</p>
+                <p><strong>Total Attempts:</strong> ${totalAttempts}</p>
+            </div>
+        `;
+    }
+
+    function resetGameState() {
+        if (window.nextQuestionTimeout) {
+            clearTimeout(window.nextQuestionTimeout);
+            window.nextQuestionTimeout = null;
+        }
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+        
+        startTime = null;
+        timeLeft = 180;
+        isProcessingAnswer = false;
+        gameActive = true;
+        
+        document.getElementById('answer').value = '';
+        document.getElementById('feedback').textContent = '';
+        document.getElementById('conjugationTable').style.display = 'none';
+    }
+
+    function toggleHint() {
+        const table = document.getElementById('conjugationTable');
+        table.style.display = table.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function restartGame() {
+        document.getElementById('end').style.display = 'none';
+        document.getElementById('nameEntry').style.display = 'block';
+        document.getElementById('playerName').value = '';
+        document.getElementById('playerName').focus();
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+        // Add enter key handler for name input
+        document.getElementById('playerName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitName();
+            }
+        });
+
+        // Add enter key handler for answer input
+        document.getElementById('answer').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !isProcessingAnswer) {
+                e.preventDefault();
+                submitAnswer();
+            }
+        });
+
+        // Load best streak from localStorage
+        const savedBestStreak = localStorage.getItem('irVerbGameBestStreak');
+        if (savedBestStreak) {
+            bestStreak = parseInt(savedBestStreak);
+        }
+    });
+</script>
+</body>
+</html> 

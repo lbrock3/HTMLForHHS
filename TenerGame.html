@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Tener Practice</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --button-bg: #800020;
+            --button-text: white;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        h1, h2, h3 {
+            font-family: 'Impact', sans-serif;
+            color: var(--text-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px;
+            width: 300px;
+        }
+
+        .accent-buttons {
+            margin: 10px 0;
+        }
+
+        .accent-button {
+            padding: 5px 10px;
+            margin: 0 2px;
+            font-size: 16px;
+        }
+
+        .feedback {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .feedback-correct {
+            color: green;
+        }
+
+        .feedback-incorrect {
+            color: red;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--button-bg);
+            transition: width 0.3s ease;
+            width: 100%;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .verb-display {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .pronoun {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--button-bg);
+            margin-bottom: 10px;
+        }
+
+        .results {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .results p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .results strong {
+            color: var(--button-bg);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            input[type="text"] {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Spanish Tener Practice</h1>
+    
+    <!-- Name Entry Section -->
+    <div id="nameEntry" class="container">
+        <h2>Enter Your Name</h2>
+        <input type="text" id="playerName" placeholder="Your Name">
+        <button onclick="submitName()">Start Game</button>
+    </div>
+
+    <!-- Game Section -->
+    <div id="game" class="container" style="display: none;">
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <div class="timer" id="timer">Time: 2:00</div>
+        
+        <div class="verb-display">
+            <div id="pronoun" class="pronoun"></div>
+        </div>
+
+        <input type="text" id="answer" placeholder="Type your answer">
+        
+        <div class="accent-buttons">
+            <button onclick="insertAccent('á')" class="accent-button" title="Alt + a">á</button>
+            <button onclick="insertAccent('é')" class="accent-button" title="Alt + e">é</button>
+            <button onclick="insertAccent('í')" class="accent-button" title="Alt + i">í</button>
+            <button onclick="insertAccent('ó')" class="accent-button" title="Alt + o">ó</button>
+            <button onclick="insertAccent('ú')" class="accent-button" title="Alt + u">ú</button>
+            <button onclick="insertAccent('ñ')" class="accent-button" title="Alt + n">ñ</button>
+        </div>
+
+        <button onclick="submitAnswer()">Submit</button>
+        
+        <div id="feedback" class="feedback"></div>
+        
+        <div class="stats">
+            <div id="score">Score: 0</div>
+            <div id="streak">Current Streak: 0</div>
+            <div id="highScore">Best Streak: 0</div>
+        </div>
+    </div>
+
+    <!-- End Game Section -->
+    <div id="end" class="container" style="display: none;">
+        <div id="finalMessage"></div>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+
+<script>
+    // Game state variables
+    let score = 0;
+    let streak = 0;
+    let bestStreak = 0;
+    let timer = null;
+    let timeLeft = 120;
+    let startTime = null;
+    let gameActive = false;
+    let playerName = '';
+    let isProcessingAnswer = false;
+    let totalAttempts = 0;
+    let currentPronoun = '';
+
+    // Tener conjugations
+    const tenerConjugations = {
+        'yo': 'tengo',
+        'tú': 'tienes',
+        'él': 'tiene',
+        'ella': 'tiene',
+        'usted': 'tiene',
+        'nosotros': 'tenemos',
+        'nosotras': 'tenemos',
+        'ellos': 'tienen',
+        'ellas': 'tienen',
+        'ustedes': 'tienen'
+    };
+
+    function generateQuestion() {
+        const pronouns = Object.keys(tenerConjugations);
+        return pronouns[Math.floor(Math.random() * pronouns.length)];
+    }
+
+    function nextQuestion() {
+        if (!gameActive) return;
+        
+        isProcessingAnswer = false;
+        
+        if (window.nextVerbTimeout) {
+            clearTimeout(window.nextVerbTimeout);
+            window.nextVerbTimeout = null;
+        }
+        
+        currentPronoun = generateQuestion();
+        
+        document.getElementById('pronoun').textContent = currentPronoun;
+        document.getElementById('answer').value = '';
+        document.getElementById('feedback').textContent = '';
+        document.getElementById('answer').focus();
+    }
+
+    function submitAnswer() {
+        if (!gameActive || isProcessingAnswer) return;
+        
+        isProcessingAnswer = true;
+        totalAttempts++;
+
+        const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+        const correctAnswer = tenerConjugations[currentPronoun];
+        
+        if (userAnswer === correctAnswer) {
+            score++;
+            streak++;
+            if (streak > bestStreak) {
+                bestStreak = streak;
+                localStorage.setItem('tenerGameBestStreak', bestStreak);
+            }
+            showFeedback(true);
+        } else {
+            streak = 0;
+            showFeedback(false, correctAnswer);
+        }
+        
+        updateDisplay();
+        
+        if (window.nextVerbTimeout) {
+            clearTimeout(window.nextVerbTimeout);
+        }
+        
+        window.nextVerbTimeout = setTimeout(() => {
+            if (gameActive) {
+                nextQuestion();
+            }
+        }, 1500);
+    }
+
+    function showFeedback(isCorrect, correctAnswer = '') {
+        const feedback = document.getElementById('feedback');
+        if (isCorrect) {
+            feedback.textContent = '¡Correcto!';
+            feedback.className = 'feedback feedback-correct';
+        } else {
+            feedback.textContent = `Incorrect. The correct answer is: ${correctAnswer}`;
+            feedback.className = 'feedback feedback-incorrect';
+        }
+    }
+
+    function startGame() {
+        resetGameState();
+        score = 0;
+        streak = 0;
+        totalAttempts = 0;
+        gameActive = true;
+        
+        updateDisplay();
+        startTimer();
+        nextQuestion();
+    }
+
+    function startTimer() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+
+        startTime = Date.now();
+        timeLeft = 120;
+        
+        updateTimer();
+
+        timer = setInterval(() => {
+            const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+            timeLeft = Math.max(120 - elapsedSeconds, 0);
+            
+            updateTimer();
+            
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }, 100);
+    }
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        const timerDisplay = document.getElementById('timer');
+        if (timerDisplay) {
+            timerDisplay.textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        const progressFill = document.getElementById('progressFill');
+        if (progressFill) {
+            const percentageLeft = (timeLeft / 120) * 100;
+            progressFill.style.width = `${percentageLeft}%`;
+        }
+    }
+
+    function updateDisplay() {
+        document.getElementById('score').textContent = `Score: ${score}`;
+        document.getElementById('streak').textContent = `Current Streak: ${streak}`;
+        document.getElementById('highScore').textContent = `Best Streak: ${bestStreak}`;
+    }
+
+    function submitName() {
+        const nameInput = document.getElementById('playerName');
+        playerName = nameInput.value.trim();
+        if (playerName) {
+            document.getElementById('nameEntry').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            startGame();
+        } else {
+            alert('Please enter your name to start');
+            nameInput.focus();
+        }
+    }
+
+    function endGame() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+        
+        gameActive = false;
+        
+        document.getElementById('game').style.display = 'none';
+        document.getElementById('end').style.display = 'block';
+        
+        const percentage = totalAttempts > 0 ? Math.round((score / totalAttempts) * 100) : 0;
+        
+        const finalMessage = document.getElementById('finalMessage');
+        finalMessage.innerHTML = `
+            <h2>¡Tiempo!</h2>
+            <h3>Results for ${playerName}:</h3>
+            <div class="results">
+                <p><strong>Final Score:</strong> ${score}</p>
+                <p><strong>Best Streak:</strong> ${bestStreak}</p>
+                <p><strong>Accuracy:</strong> ${percentage}%</p>
+                <p><strong>Total Attempts:</strong> ${totalAttempts}</p>
+            </div>
+        `;
+    }
+
+    function resetGameState() {
+        if (window.nextVerbTimeout) {
+            clearTimeout(window.nextVerbTimeout);
+            window.nextVerbTimeout = null;
+        }
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+        
+        startTime = null;
+        timeLeft = 120;
+        isProcessingAnswer = false;
+        gameActive = true;
+        
+        document.getElementById('answer').value = '';
+        document.getElementById('feedback').textContent = '';
+    }
+
+    function insertAccent(accent) {
+        const input = document.getElementById('answer');
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+        const text = input.value;
+        input.value = text.slice(0, start) + accent + text.slice(end);
+        input.selectionStart = input.selectionEnd = start + 1;
+        input.focus();
+    }
+
+    function restartGame() {
+        document.getElementById('end').style.display = 'none';
+        document.getElementById('nameEntry').style.display = 'block';
+        document.getElementById('playerName').value = '';
+        document.getElementById('playerName').focus();
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+        // Add enter key handler for name input
+        document.getElementById('playerName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitName();
+            }
+        });
+
+        // Add enter key handler for answer input
+        document.getElementById('answer').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !isProcessingAnswer) {
+                e.preventDefault();
+                submitAnswer();
+            }
+        });
+
+        // Add keyboard shortcuts for accents
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey) {
+                switch(e.key) {
+                    case 'a': insertAccent('á'); break;
+                    case 'e': insertAccent('é'); break;
+                    case 'i': insertAccent('í'); break;
+                    case 'o': insertAccent('ó'); break;
+                    case 'u': insertAccent('ú'); break;
+                    case 'n': insertAccent('ñ'); break;
+                }
+            }
+        });
+
+        // Load best streak from localStorage
+        const savedBestStreak = localStorage.getItem('tenerGameBestStreak');
+        if (savedBestStreak) {
+            bestStreak = parseInt(savedBestStreak);
+        }
+    });
+</script>
+</body>
+</html> 

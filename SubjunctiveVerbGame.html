@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Señor Brock's Spanish Present Subjunctive Game</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --button-bg: #800020;  /* Burgundy color from other games */
+            --button-text: white;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Impact', sans-serif;
+            color: var(--text-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            letter-spacing: 0.5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .accent-button {
+            background-color: white;
+            border: 1px solid var(--button-bg);
+            color: var(--text-color);
+        }
+
+        .accent-button:hover {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+        }
+
+        .feedback-correct {
+            color: var(--button-bg);
+            font-weight: bold;
+        }
+
+        .progress-fill {
+            background-color: var(--button-bg);
+        }
+
+        .modal-content {
+            background-color: var(--bg-color);
+            border: 2px solid var(--button-bg);
+        }
+
+        .close {
+            color: var(--button-bg);
+        }
+
+        /* Update the help button to match other games */
+        .help-button {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 4px;  /* Change from 50% to match other buttons */
+            width: auto;  /* Remove fixed width */
+            height: auto;  /* Remove fixed height */
+            padding: 10px 20px;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Update the verb type options to match other games */
+        .verb-type-option {
+            border-color: var(--button-bg);
+            background-color: white;
+        }
+
+        /* Update the subjunctive info section */
+        .subjunctive-info {
+            border: 1px solid var(--button-bg);
+            background-color: white;
+        }
+
+        .que-form {
+            color: var(--button-bg);
+            font-weight: bold;
+        }
+
+        /* Copy styles from PreteriteVerbGame.html */
+        .subjunctive-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .subjunctive-info h3 {
+            color: var(--button-bg);
+            margin-bottom: 10px;
+        }
+
+        .subjunctive-info ul {
+            padding-left: 20px;
+        }
+
+        .subjunctive-info li {
+            margin: 5px 0;
+        }
+
+        .subjunctive-prompt {
+            font-size: 16px;
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .verb-display {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        /* End game screen styles */
+        #end {
+            text-align: center;
+        }
+
+        #finalMessage {
+            margin: 20px 0;
+        }
+
+        #finalMessage h2 {
+            color: var(--button-bg);
+        }
+
+        /* Help modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .help-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .help-section h3 {
+            color: var(--button-bg);
+            margin-bottom: 10px;
+        }
+
+        .help-section ul {
+            padding-left: 20px;
+        }
+
+        .help-section li {
+            margin: 5px 0;
+        }
+
+        /* Add these styles */
+        .regularity-options {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .regularity-choice {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .regularity-choice input[type="radio"] {
+            margin: 0;
+        }
+
+        .regularity-choice label {
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+
+        /* Add these styles for the results display */
+        .results {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .results p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .results strong {
+            color: var(--button-bg);
+        }
+
+        /* Add these styles */
+        .modal-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .modal-content {
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Spanish Present Subjunctive Practice</h1>
+
+    <div id="nameInput" class="container">
+        <h2>Welcome!</h2>
+        <p>Practice conjugating Spanish verbs in the present subjunctive tense.</p>
+        <div class="input-container">
+            <input type="text" id="playerName" placeholder="Enter your name">
+            <button onclick="submitName()">Start</button>
+        </div>
+        <p class="enter-hint">Press Enter to Start</p>
+    </div>
+
+    <!-- Verb type selection -->
+    <div id="verbTypeSelect" class="container" style="display: none;">
+        <h2>Select Verb Types</h2>
+        <p class="instruction">Choose verb types and regularity:</p>
+        
+        <!-- Verb type options -->
+        <div class="verb-type-options">
+            <div class="verb-type-option">
+                <input type="checkbox" id="arVerbs" value="ar">
+                <label for="arVerbs">AR Verbs</label>
+                <p class="example">Example: hablar → que hable</p>
+            </div>
+            <div class="verb-type-option">
+                <input type="checkbox" id="erVerbs" value="er">
+                <label for="erVerbs">ER Verbs</label>
+                <p class="example">Example: comer → que coma</p>
+            </div>
+            <div class="verb-type-option">
+                <input type="checkbox" id="irVerbs" value="ir">
+                <label for="irVerbs">IR Verbs</label>
+                <p class="example">Example: vivir → que viva</p>
+            </div>
+        </div>
+
+        <!-- Add regularity options -->
+        <div class="regularity-options">
+            <h3>Verb Regularity:</h3>
+            <div class="regularity-choice">
+                <input type="radio" id="allVerbs" name="regularity" value="all" checked>
+                <label for="allVerbs">All Verbs</label>
+            </div>
+            <div class="regularity-choice">
+                <input type="radio" id="regularOnly" name="regularity" value="regular">
+                <label for="regularOnly">Regular Verbs Only</label>
+            </div>
+            <div class="regularity-choice">
+                <input type="radio" id="irregularOnly" name="regularity" value="irregular">
+                <label for="irregularOnly">Irregular Verbs Only</label>
+            </div>
+        </div>
+
+        <div class="subjunctive-info">
+            <h3>Present Subjunctive Formation:</h3>
+            <ul>
+                <li>AR verbs: Change -ar to -e, -es, -e, -emos, -éis, -en</li>
+                <li>ER/IR verbs: Change to -a, -as, -a, -amos, -áis, -an</li>
+                <li>Watch for irregular verbs (marked with "irregular")</li>
+                <li>Common irregularities:</li>
+                <ul>
+                    <li>-car → -que (buscar → busque)</li>
+                    <li>-gar → -gue (pagar → pague)</li>
+                    <li>-zar → -ce (alcanzar → alcance)</li>
+                    <li>e → ie (cerrar → cierre)</li>
+                    <li>o → ue (dormir → duerma)</li>
+                </ul>
+            </ul>
+        </div>
+        <button onclick="startWithSelectedTypes()" class="control-button">Start</button>
+    </div>
+
+    <!-- Game interface -->
+    <div id="game" class="container" style="display: none;">
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <div class="timer" id="timer">Time: 2:00</div>
+        
+        <div class="verb-display">
+            <div id="verb" style="font-size: 24px; margin: 20px 0;"></div>
+            <div class="subjunctive-prompt">Conjugate in the subjunctive:</div>
+            <div class="que-form">que <span id="form" class="pronoun"></span></div>
+        </div>
+
+        <input type="text" id="answer" placeholder="Type your answer">
+        
+        <div class="accent-buttons">
+            <button onclick="insertAccent('á')" class="accent-button" title="Alt + a">á</button>
+            <button onclick="insertAccent('é')" class="accent-button" title="Alt + e">é</button>
+            <button onclick="insertAccent('í')" class="accent-button" title="Alt + i">í</button>
+            <button onclick="insertAccent('ó')" class="accent-button" title="Alt + o">ó</button>
+            <button onclick="insertAccent('ú')" class="accent-button" title="Alt + u">ú</button>
+            <button onclick="insertAccent('ñ')" class="accent-button" title="Alt + n">ñ</button>
+        </div>
+
+        <button onclick="submitAnswer()">Submit</button>
+        
+        <div id="feedback" class="feedback"></div>
+        
+        <div class="stats">
+            <div id="score">Score: 0</div>
+            <div id="streak">Current Streak: 0</div>
+            <div id="highScore">Best Streak: 0</div>
+        </div>
+    </div>
+
+    <!-- Update the end game screen div -->
+    <div id="end" class="container" style="display: none;">
+        <div id="finalMessage"></div>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+
+    <!-- Add help button -->
+    <button onclick="showHelp()" class="help-button" style="position: fixed; bottom: 20px; right: 20px;">
+        Help
+    </button>
+
+    <!-- Add the help modal HTML after the help button -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeHelp()">&times;</span>
+            <h2>How to Play - Present Subjunctive</h2>
+            
+            <div class="help-section">
+                <h3>Basic Rules</h3>
+                <ul>
+                    <li>Type the correct subjunctive form of the verb</li>
+                    <li>All answers start with "que" (already provided)</li>
+                    <li>Pay attention to accents - they matter!</li>
+                    <li>Watch for irregular verbs (marked with "irregular")</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>Formation Rules</h3>
+                <ul>
+                    <li>AR verbs: Change -ar to -e, -es, -e, -emos, -éis, -en</li>
+                    <li>ER/IR verbs: Change to -a, -as, -a, -amos, -áis, -an</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>Common Irregularities</h3>
+                <ul>
+                    <li>-car → -que (buscar → busque)</li>
+                    <li>-gar → -gue (pagar → pague)</li>
+                    <li>-zar → -ce (alcanzar → alcance)</li>
+                    <li>e → ie (cerrar → cierre)</li>
+                    <li>o → ue (dormir → duerma)</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>Keyboard Shortcuts</h3>
+                <ul>
+                    <li>Enter - Submit your answer</li>
+                    <li>Alt + a = á</li>
+                    <li>Alt + e = é</li>
+                    <li>Alt + i = í</li>
+                    <li>Alt + o = ó</li>
+                    <li>Alt + u = ú</li>
+                    <li>Alt + n = ñ</li>
+                </ul>
+            </div>
+
+            <div class="modal-buttons">
+                <button onclick="closeHelp()">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Define irregular verb forms for present subjunctive
+        const irregularVerbs = {
+            "actuar": {
+                yo: "actúe",
+                tú: "actúes",
+                él: "actúe",
+                ella: "actúe",
+                usted: "actúe",
+                nosotros: "actuemos",
+                nosotras: "actuemos",
+                ellos: "actúen",
+                ellas: "actúen",
+                ustedes: "actúen"
+            },
+            "agregar": {
+                yo: "agregue",
+                tú: "agregues",
+                él: "agregue",
+                ella: "agregue",
+                usted: "agregue",
+                nosotros: "agreguemos",
+                nosotras: "agreguemos",
+                ellos: "agreguen",
+                ellas: "agreguen",
+                ustedes: "agreguen"
+            },
+            "alcanzar": {
+                yo: "alcance",
+                tú: "alcances",
+                él: "alcance",
+                ella: "alcance",
+                usted: "alcance",
+                nosotros: "alcancemos",
+                nosotras: "alcancemos",
+                ellos: "alcancen",
+                ellas: "alcancen",
+                ustedes: "alcancen"
+            },
+            "andar": {
+                yo: "ande",
+                tú: "andes",
+                él: "ande",
+                ella: "ande",
+                usted: "ande",
+                nosotros: "andemos",
+                nosotras: "andemos",
+                ellos: "anden",
+                ellas: "anden",
+                ustedes: "anden"
+            },
+            "apagar": {
+                yo: "apague",
+                tú: "apagues",
+                él: "apague",
+                ella: "apague",
+                usted: "apague",
+                nosotros: "apaguemos",
+                nosotras: "apaguemos",
+                ellos: "apaguen",
+                ellas: "apaguen",
+                ustedes: "apaguen"
+            },
+            "buscar": {
+                yo: "busque",
+                tú: "busques",
+                él: "busque",
+                ella: "busque",
+                usted: "busque",
+                nosotros: "busquemos",
+                nosotras: "busquemos",
+                ellos: "busquen",
+                ellas: "busquen",
+                ustedes: "busquen"
+            },
+            "cerrar": {
+                yo: "cierre",
+                tú: "cierres",
+                él: "cierre",
+                ella: "cierre",
+                usted: "cierre",
+                nosotros: "cerremos",
+                nosotras: "cerremos",
+                ellos: "cierren",
+                ellas: "cierren",
+                ustedes: "cierren"
+            },
+            "cruzar": {
+                yo: "cruce",
+                tú: "cruces",
+                él: "cruce",
+                ella: "cruce",
+                usted: "cruce",
+                nosotros: "crucemos",
+                nosotras: "crucemos",
+                ellos: "crucen",
+                ellas: "crucen",
+                ustedes: "crucen"
+            },
+            "convencer": {
+                yo: "convenza",
+                tú: "convenzas",
+                él: "convenza",
+                ella: "convenza",
+                usted: "convenza",
+                nosotros: "convenzamos",
+                nosotras: "convenzamos",
+                ellos: "convenzan",
+                ellas: "convenzan",
+                ustedes: "convenzan"
+            },
+            "crecer": {
+                yo: "crezca",
+                tú: "crezcas",
+                él: "crezca",
+                ella: "crezca",
+                usted: "crezca",
+                nosotros: "crezcamos",
+                nosotras: "crezcamos",
+                ellos: "crezcan",
+                ellas: "crezcan",
+                ustedes: "crezcan"
+            }
+        };
+
+        // Regular subjunctive conjugation forms
+        const subjunctiveForms = {
+            ar: {
+                yo: 'e',
+                tú: 'es',
+                él: 'e',
+                ella: 'e',
+                usted: 'e',
+                nosotros: 'emos',
+                nosotras: 'emos',
+                ellos: 'en',
+                ellas: 'en',
+                ustedes: 'en'
+            },
+            er: {
+                yo: 'a',
+                tú: 'as',
+                él: 'a',
+                ella: 'a',
+                usted: 'a',
+                nosotros: 'amos',
+                nosotras: 'amos',
+                ellos: 'an',
+                ellas: 'an',
+                ustedes: 'an'
+            },
+            ir: {
+                yo: 'a',
+                tú: 'as',
+                él: 'a',
+                ella: 'a',
+                usted: 'a',
+                nosotros: 'amos',
+                nosotras: 'amos',
+                ellos: 'an',
+                ellas: 'an',
+                ustedes: 'an'
+            }
+        };
+
+        // Modified conjugation function for subjunctive
+        function conjugateVerb(verb, pronoun) {
+            // Check for completely irregular verbs first
+            if (irregularVerbs[verb]) {
+                return irregularVerbs[verb][pronoun];
+            }
+
+            // Get verb type (ar/er/ir)
+            const verbType = verb.slice(-2);
+            const stem = verb.slice(0, -2);
+
+            // Regular subjunctive conjugation
+            return stem + subjunctiveForms[verbType][pronoun];
+        }
+
+        // Add these irregular verbs to the irregularVerbs object
+        const moreIrregulars = {
+            "descender": {
+                yo: "descienda",
+                tú: "desciendas",
+                él: "descienda",
+                ella: "descienda",
+                usted: "descienda",
+                nosotros: "descendamos",
+                nosotras: "descendamos",
+                ellos: "desciendan",
+                ellas: "desciendan",
+                ustedes: "desciendan"
+            },
+            "devolver": {
+                yo: "devuelva",
+                tú: "devuelvas",
+                él: "devuelva",
+                ella: "devuelva",
+                usted: "devuelva",
+                nosotros: "devolvamos",
+                nosotras: "devolvamos",
+                ellos: "devuelvan",
+                ellas: "devuelvan",
+                ustedes: "devuelvan"
+            },
+            "disolver": {
+                yo: "disuelva",
+                tú: "disuelvas",
+                él: "disuelva",
+                ella: "disuelva",
+                usted: "disuelva",
+                nosotros: "disolvamos",
+                nosotras: "disolvamos",
+                ellos: "disuelvan",
+                ellas: "disuelvan",
+                ustedes: "disuelvan"
+            },
+            "envolver": {
+                yo: "envuelva",
+                tú: "envuelvas",
+                él: "envuelva",
+                ella: "envuelva",
+                usted: "envuelva",
+                nosotros: "envolvamos",
+                nosotras: "envolvamos",
+                ellos: "envuelvan",
+                ellas: "envuelvan",
+                ustedes: "envuelvan"
+            },
+            "escoger": {
+                yo: "escoja",
+                tú: "escojas",
+                él: "escoja",
+                ella: "escoja",
+                usted: "escoja",
+                nosotros: "escojamos",
+                nosotras: "escojamos",
+                ellos: "escojan",
+                ellas: "escojan",
+                ustedes: "escojan"
+            },
+            "ofrecer": {
+                yo: "ofrezca",
+                tú: "ofrezcas",
+                él: "ofrezca",
+                ella: "ofrezca",
+                usted: "ofrezca",
+                nosotros: "ofrezcamos",
+                nosotras: "ofrezcamos",
+                ellos: "ofrezcan",
+                ellas: "ofrezcan",
+                ustedes: "ofrezcan"
+            },
+            "proteger": {
+                yo: "proteja",
+                tú: "protejas",
+                él: "proteja",
+                ella: "proteja",
+                usted: "proteja",
+                nosotros: "protejamos",
+                nosotras: "protejamos",
+                ellos: "protejan",
+                ellas: "protejan",
+                ustedes: "protejan"
+            },
+            "tender": {
+                yo: "tienda",
+                tú: "tiendas",
+                él: "tienda",
+                ella: "tienda",
+                usted: "tienda",
+                nosotros: "tendamos",
+                nosotras: "tendamos",
+                ellos: "tiendan",
+                ellas: "tiendan",
+                ustedes: "tiendan"
+            },
+            "inducir": {
+                yo: "induzca",
+                tú: "induzcas",
+                él: "induzca",
+                ella: "induzca",
+                usted: "induzca",
+                nosotros: "induzcamos",
+                nosotras: "induzcamos",
+                ellos: "induzcan",
+                ellas: "induzcan",
+                ustedes: "induzcan"
+            },
+            "sumergir": {
+                yo: "sumerja",
+                tú: "sumerjas",
+                él: "sumerja",
+                ella: "sumerja",
+                usted: "sumerja",
+                nosotros: "sumerjamos",
+                nosotras: "sumerjamos",
+                ellos: "sumerjan",
+                ellas: "sumerjan",
+                ustedes: "sumerjan"
+            }
+        };
+
+        // Merge the irregular verbs objects
+        Object.assign(irregularVerbs, moreIrregulars);
+
+        // Add verb lists with irregular verbs marked
+        const arVerbs = [
+            { verb: "abrazar", translation: "to hug", regular: true },
+            { verb: "acompañar", translation: "to accompany", regular: true },
+            { verb: "aconsejar", translation: "to advise", regular: true },
+            { verb: "actuar", translation: "to act", regular: false },  // irregular: u → ú
+            { verb: "admirar", translation: "to admire", regular: true },
+            { verb: "afectar", translation: "to affect", regular: true },
+            { verb: "agregar", translation: "to add", regular: false },  // irregular: g → gu
+            { verb: "ahorrar", translation: "to save (money)", regular: true },
+            { verb: "alcanzar", translation: "to reach", regular: false },  // irregular: z → c
+            { verb: "alegrar", translation: "to cheer up", regular: true },
+            { verb: "amar", translation: "to love", regular: true },
+            { verb: "andar", translation: "to walk, to go", regular: false },
+            { verb: "apagar", translation: "to turn off", regular: false },  // irregular: g → gu
+            { verb: "apreciar", translation: "to appreciate", regular: true },
+            { verb: "arreglar", translation: "to fix, to arrange", regular: true },
+            { verb: "ayudar", translation: "to help", regular: true },
+            { verb: "bailar", translation: "to dance", regular: true },
+            { verb: "bajar", translation: "to go down, to lower", regular: true },
+            { verb: "bañar", translation: "to bathe", regular: true },
+            { verb: "besar", translation: "to kiss", regular: true },
+            { verb: "buscar", translation: "to look for", regular: false },  // irregular: c → qu
+            { verb: "cambiar", translation: "to change", regular: true },
+            { verb: "caminar", translation: "to walk", regular: true },
+            { verb: "cantar", translation: "to sing", regular: true },
+            { verb: "celebrar", translation: "to celebrate", regular: true },
+            { verb: "cenar", translation: "to have dinner", regular: true },
+            { verb: "cerrar", translation: "to close", regular: false },  // irregular: e → ie
+            { verb: "charlar", translation: "to chat", regular: true },
+            { verb: "cocinar", translation: "to cook", regular: true },
+            { verb: "colaborar", translation: "to collaborate", regular: true },
+            { verb: "comprar", translation: "to buy", regular: true },
+            { verb: "contestar", translation: "to answer", regular: true },
+            { verb: "conversar", translation: "to converse", regular: true },
+            { verb: "cortar", translation: "to cut", regular: true },
+            { verb: "cruzar", translation: "to cross", regular: false },  // irregular: z → c
+            { verb: "cuidar", translation: "to take care of", regular: true },
+            { verb: "dejar", translation: "to leave (behind)", regular: true },
+            { verb: "descansar", translation: "to rest", regular: true },
+            { verb: "desear", translation: "to wish, to desire", regular: true },
+            { verb: "dibujar", translation: "to draw", regular: true }
+        ];
+
+        const erVerbs = [
+            { verb: "acceder", translation: "to access", regular: true },
+            { verb: "aprender", translation: "to learn", regular: true },
+            { verb: "atender", translation: "to attend to", regular: true },
+            { verb: "barrer", translation: "to sweep", regular: true },
+            { verb: "beber", translation: "to drink", regular: true },
+            { verb: "ceder", translation: "to give up, to yield", regular: true },
+            { verb: "comer", translation: "to eat", regular: true },
+            { verb: "comprender", translation: "to understand", regular: true },
+            { verb: "convencer", translation: "to convince", regular: false },  // irregular: c → z
+            { verb: "crecer", translation: "to grow", regular: false },  // irregular: c → zc
+            { verb: "creer", translation: "to believe", regular: true },
+            { verb: "deber", translation: "to owe, must", regular: true },
+            { verb: "descender", translation: "to descend", regular: false },  // irregular: e → ie
+            { verb: "devolver", translation: "to return (something)", regular: false },  // irregular: o → ue
+            { verb: "disolver", translation: "to dissolve", regular: false },  // irregular: o → ue
+            { verb: "envolver", translation: "to wrap", regular: false },  // irregular: o → ue
+            { verb: "escoger", translation: "to choose", regular: false },  // irregular: g → j
+            { verb: "esconder", translation: "to hide", regular: true },
+            { verb: "ofrecer", translation: "to offer", regular: false },  // irregular: c → zc
+            { verb: "proteger", translation: "to protect", regular: false },  // irregular: g → j
+            { verb: "tender", translation: "to tend to", regular: false }  // irregular: e → ie
+        ];
+
+        const irVerbs = [
+            { verb: "aburrir", translation: "to bore", regular: true },
+            { verb: "acudir", translation: "to attend, to turn up", regular: true },
+            { verb: "admitir", translation: "to admit", regular: true },
+            { verb: "añadir", translation: "to add", regular: true },
+            { verb: "aplaudir", translation: "to applaud", regular: true },
+            { verb: "asistir", translation: "to attend", regular: true },
+            { verb: "compartir", translation: "to share", regular: true },
+            { verb: "convivir", translation: "to coexist, to live together", regular: true },
+            { verb: "cumplir", translation: "to fulfill, to achieve", regular: true },
+            { verb: "decidir", translation: "to decide", regular: true },
+            { verb: "definir", translation: "to define", regular: true },
+            { verb: "describir", translation: "to describe", regular: true },
+            { verb: "discutir", translation: "to discuss, to argue", regular: true },
+            { verb: "dividir", translation: "to divide", regular: true },
+            { verb: "escribir", translation: "to write", regular: true },
+            { verb: "existir", translation: "to exist", regular: true },
+            { verb: "imprimir", translation: "to print", regular: true },
+            { verb: "inducir", translation: "to induce", regular: false },  // irregular: c → zc
+            { verb: "insistir", translation: "to insist", regular: true },
+            { verb: "ocurrir", translation: "to occur, to happen", regular: true },
+            { verb: "omitir", translation: "to omit", regular: true },
+            { verb: "permitir", translation: "to permit, to allow", regular: true },
+            { verb: "persistir", translation: "to persist", regular: true },
+            { verb: "prohibir", translation: "to prohibit", regular: true },
+            { verb: "recibir", translation: "to receive", regular: true },
+            { verb: "repartir", translation: "to distribute, to deliver", regular: true },
+            { verb: "residir", translation: "to reside, to live", regular: true },
+            { verb: "revivir", translation: "to revive", regular: true },
+            { verb: "subir", translation: "to go up, to climb, to upload", regular: true },
+            { verb: "sufrir", translation: "to suffer", regular: true },
+            { verb: "sumergir", translation: "to submerge", regular: false },  // irregular: g → j
+            { verb: "suprimir", translation: "to suppress", regular: true },
+            { verb: "transmitir", translation: "to transmit, to broadcast", regular: true },
+            { verb: "unir", translation: "to unite, to join", regular: true },
+            { verb: "vivir", translation: "to live", regular: true }
+        ];
+
+        // Add these variables to track attempts
+        let regularAttempts = 0;
+        let irregularAttempts = 0;
+        let currentVerb = null;
+
+        // Add these variables at the start of the script section
+        let currentVerbs = [];
+        let currentVerbType = '';
+        let score = 0;
+        let streak = 0;
+        let bestStreak = 0;
+        let timer;
+        let timeLeft;
+        let gameActive = false;
+        let playerName = '';
+
+        // Add this function for name submission
+        function submitName() {
+            const nameInput = document.getElementById('playerName');
+            playerName = nameInput.value.trim();
+            if (playerName) {
+                document.getElementById('nameInput').style.display = 'none';
+                document.getElementById('verbTypeSelect').style.display = 'block';
+            } else {
+                alert('Please enter your name to start');
+                nameInput.focus();
+            }
+        }
+
+        // Add this function for verb type selection
+        function startWithSelectedTypes() {
+            const arSelected = document.getElementById('arVerbs').checked;
+            const erSelected = document.getElementById('erVerbs').checked;
+            const irSelected = document.getElementById('irVerbs').checked;
+            const regularity = document.querySelector('input[name="regularity"]:checked').value;
+            
+            if (!arSelected && !erSelected && !irSelected) {
+                alert('Please select at least one verb type');
+                return;
+            }
+            
+            // Get all selected verbs
+            let selectedVerbs = [];
+            if (arSelected) selectedVerbs = selectedVerbs.concat(arVerbs);
+            if (erSelected) selectedVerbs = selectedVerbs.concat(erVerbs);
+            if (irSelected) selectedVerbs = selectedVerbs.concat(irVerbs);
+            
+            // Filter based on regularity
+            switch(regularity) {
+                case 'regular':
+                    currentVerbs = selectedVerbs.filter(verb => verb.regular);
+                    break;
+                case 'irregular':
+                    currentVerbs = selectedVerbs.filter(verb => !verb.regular);
+                    break;
+                default: // 'all'
+                    currentVerbs = selectedVerbs;
+            }
+
+            if (currentVerbs.length === 0) {
+                alert('No verbs match your selection. Please choose different options.');
+                return;
+            }
+            
+            const selectedTypes = [];
+            if (arSelected) selectedTypes.push('AR');
+            if (erSelected) selectedTypes.push('ER');
+            if (irSelected) selectedTypes.push('IR');
+            currentVerbType = selectedTypes.join('/');
+            
+            document.getElementById('verbTypeSelect').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            startGame();
+        }
+
+        // Add these core game functions
+        function startGame() {
+            score = 0;
+            streak = 0;
+            regularAttempts = 0;
+            irregularAttempts = 0;
+            timeLeft = 120; // 2 minutes
+            gameActive = true;
+            updateDisplay();
+            startTimer();
+            nextVerb();
+        }
+
+        function nextVerb() {
+            if (!gameActive) return;
+            
+            currentVerb = currentVerbs[Math.floor(Math.random() * currentVerbs.length)];
+            const pronouns = ['yo', 'tú', 'él', 'ella', 'usted', 'nosotros', 'nosotras', 'ellos', 'ellas', 'ustedes'];
+            const randomPronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
+            
+            // Add indicator for irregular verbs
+            const irregularNote = !currentVerb.regular ? ' (irregular)' : '';
+            
+            document.getElementById('verb').textContent = 
+                `${currentVerb.verb}${irregularNote} (${currentVerb.translation})`;
+            document.getElementById('form').textContent = randomPronoun;
+            
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const percent = (timeLeft / 120) * 100;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').textContent = `Score: ${score}`;
+            document.getElementById('streak').textContent = `Current Streak: ${streak}`;
+            document.getElementById('highScore').textContent = `Best Streak: ${bestStreak}`;
+        }
+
+        function showFeedback(correct, correctAnswer = '') {
+            const feedback = document.getElementById('feedback');
+            if (correct) {
+                feedback.textContent = '¡Correcto!';
+                feedback.className = 'feedback-correct';
+            } else {
+                feedback.textContent = `Incorrect. The correct answer is: ${correctAnswer}`;
+                feedback.className = 'feedback-incorrect';
+            }
+        }
+
+        function submitAnswer() {
+            if (!gameActive) return;
+
+            const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+            const verb = currentVerb.verb;
+            const pronoun = document.getElementById('form').textContent;
+            const correctAnswer = conjugateVerb(verb, pronoun);
+            
+            // Track attempts
+            if (currentVerb.regular) {
+                regularAttempts++;
+            } else {
+                irregularAttempts++;
+            }
+            
+            if (userAnswer === correctAnswer) {
+                score++;
+                streak++;
+                if (streak > bestStreak) {
+                    bestStreak = streak;
+                    localStorage.setItem('subjunctiveGameBestStreak', bestStreak);
+                }
+                showFeedback(true);
+            } else {
+                streak = 0;
+                showFeedback(false, correctAnswer);
+            }
+            
+            updateDisplay();
+            setTimeout(nextVerb, 1500);
+        }
+
+        function endGame() {
+            clearInterval(timer);
+            gameActive = false;
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('end').style.display = 'block';
+            
+            const total = regularAttempts + irregularAttempts;
+            const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+            
+            const finalMessage = document.getElementById('finalMessage');
+            finalMessage.innerHTML = `
+                <h2>¡Tiempo!</h2>
+                <h3>Results for ${playerName}:</h3>
+                <div class="results">
+                    <p><strong>Final Score:</strong> ${score}</p>
+                    <p><strong>Best Streak:</strong> ${bestStreak}</p>
+                    <p><strong>Accuracy:</strong> ${percentage}%</p>
+                    <p><strong>Regular Verbs:</strong> ${regularAttempts} attempts</p>
+                    <p><strong>Irregular Verbs:</strong> ${irregularAttempts} attempts</p>
+                </div>
+            `;
+        }
+
+        // Help modal functionality
+        function showHelp() {
+            const helpModal = document.getElementById('helpModal');
+            helpModal.style.display = 'block';
+        }
+
+        function closeHelp() {
+            const helpModal = document.getElementById('helpModal');
+            helpModal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const helpModal = document.getElementById('helpModal');
+            if (event.target === helpModal) {
+                helpModal.style.display = 'none';
+            }
+        }
+
+        // Load high score on startup
+        if (localStorage.getItem('subjunctiveGameBestStreak')) {
+            bestStreak = parseInt(localStorage.getItem('subjunctiveGameBestStreak'));
+        }
+
+        // Add this keyboard event listener after the existing script
+        document.addEventListener('keydown', (e) => {
+            // Enter key for submitting name or answer
+            if (e.key === 'Enter') {
+                if (document.activeElement === document.getElementById('playerName')) {
+                    submitName();
+                } else if (document.activeElement === document.getElementById('answer')) {
+                    submitAnswer();
+                }
+            }
+
+            // Alt + letter shortcuts for accents
+            if (e.altKey) {
+                switch(e.key.toLowerCase()) {
+                    case 'a':
+                        e.preventDefault();
+                        insertAccent('á');
+                        break;
+                    case 'e':
+                        e.preventDefault();
+                        insertAccent('é');
+                        break;
+                    case 'i':
+                        e.preventDefault();
+                        insertAccent('í');
+                        break;
+                    case 'o':
+                        e.preventDefault();
+                        insertAccent('ó');
+                        break;
+                    case 'u':
+                        e.preventDefault();
+                        insertAccent('ú');
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        insertAccent('ñ');
+                        break;
+                }
+            }
+        });
+
+        // Add this function for inserting accents
+        function insertAccent(accent) {
+            const input = document.getElementById('answer');
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            input.value = input.value.slice(0, start) + accent + input.value.slice(end);
+            input.selectionStart = input.selectionEnd = start + 1;
+            input.focus();
+        }
+
+        // Add this to initialize focus on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('playerName').focus();
+        });
+    </script>
+</body>
+</html> 

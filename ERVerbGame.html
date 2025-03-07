@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Señor Brock's ER Verb Conjugation Game</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --button-bg: #800020;
+            --button-text: white;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            color: var(--button-bg);
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        }
+
+        .verb-display {
+            font-size: 24px;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+        }
+
+        .pronoun {
+            font-size: 20px;
+            margin: 10px 0;
+            color: var(--button-bg);
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 18px;
+            margin: 10px;
+            border: 2px solid var(--button-bg);
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .feedback {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+
+        .correct {
+            color: green;
+        }
+
+        .incorrect {
+            color: red;
+        }
+
+        .score-display {
+            font-size: 20px;
+            margin: 20px 0;
+        }
+
+        .keyboard-shortcuts {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+        }
+
+        .timer {
+            font-size: 24px;
+            margin: 20px 0;
+            color: var(--button-bg);
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 300px;
+            margin: 20px auto;
+        }
+        
+        .difficulty-buttons button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            transition: transform 0.2s;
+        }
+        
+        .difficulty-buttons button:hover {
+            transform: scale(1.05);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: var(--button-bg);
+        }
+
+        .input-container {
+            margin: 30px 0;
+        }
+
+        #nameInput {
+            margin-top: 50px;
+        }
+
+        #nameInput p {
+            font-size: 1.2em;
+            margin: 20px 0;
+            color: #666;
+        }
+
+        #playerName {
+            font-size: 1.2em;
+            padding: 12px 20px;
+            margin-right: 10px;
+            width: 250px;
+        }
+
+        .mode-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 300px;
+            margin: 20px auto;
+        }
+        
+        .mode-buttons button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            transition: transform 0.2s;
+        }
+        
+        .mode-buttons button:hover {
+            transform: scale(1.05);
+        }
+
+        .mode-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 300px;
+            margin: 20px auto;
+        }
+        
+        .mode-option {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .mode-explanation {
+            color: #666;
+            font-style: italic;
+            margin: 0;
+            font-size: 1.1em;
+        }
+
+        #accentButtons {
+            margin: 10px 0;
+        }
+        
+        #accentButtons button {
+            font-size: 1.2em;
+            margin: 0 5px;
+            padding: 5px 15px;
+        }
+
+        .end-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .reset-button {
+            background-color: #cc0000;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--button-bg);
+            transition: width 1s linear;
+        }
+
+        .time-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            color: white;
+            mix-blend-mode: difference;
+            line-height: 20px;
+            font-size: 14px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.3);
+        }
+
+        button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.3);
+        }
+
+        .enter-hint {
+            color: #666;
+            font-style: italic;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>ER Verb Conjugation Practice</h1>
+
+    <div id="nameInput" class="container">
+        <h2>Welcome!</h2>
+        <p>Practice conjugating Spanish ER verbs in the present tense.</p>
+        <div class="input-container">
+            <input type="text" id="playerName" placeholder="Enter your name">
+            <button onclick="submitName()">Start</button>
+        </div>
+        <p class="enter-hint">Press Enter to Start</p>
+    </div>
+
+    <!-- Add the missing mode selection div -->
+    <div id="modeSelect" class="container" style="display: none;">
+        <h2>Select Game Mode</h2>
+        <div class="mode-options">
+            <div class="mode-option">
+                <button onclick="selectMode('conjugation')">Conjugation Mode</button>
+                <p class="mode-explanation">Given: yo → You write: hablo</p>
+            </div>
+            <div class="mode-option">
+                <button onclick="selectMode('pronoun')">Pronoun Mode</button>
+                <p class="mode-explanation">Given: hablo → You write: yo</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add the missing difficulty selection div -->
+    <div id="difficultySelect" class="container" style="display: none;">
+        <h2>Select Difficulty</h2>
+        <div class="difficulty-buttons">
+            <button onclick="selectDifficulty('easy')">Easy (1 min) [1]</button>
+            <button onclick="selectDifficulty('medium')">Medium (2 min) [2]</button>
+            <button onclick="selectDifficulty('hard')">Hard (3 min) [3]</button>
+        </div>
+    </div>
+
+    <!-- Add the missing game container -->
+    <div class="container" id="game" style="display: none;">
+        <div class="verb-display">
+            <div id="verb"></div>
+            <div class="pronoun" id="pronoun"></div>
+        </div>
+        <input type="text" id="answer" placeholder="Type your answer">
+        <div id="accentButtons" style="display: none;">
+            <button onclick="addAccent('á')">á</button>
+            <button onclick="addAccent('é')">é</button>
+            <button onclick="addAccent('í')">í</button>
+            <button onclick="addAccent('ó')">ó</button>
+            <button onclick="addAccent('ú')">ú</button>
+            <button onclick="addAccent('ñ')">ñ</button>
+        </div>
+        <div>
+            <button onclick="checkAnswer()">Submit</button>
+            <button onclick="nextVerb()">Next</button>
+        </div>
+        <div class="feedback" id="feedback"></div>
+        <div class="score-display">
+            Score: <span id="score">0</span>/<span id="total">0</span>
+            <div>Streak: <span id="streak">0</span></div>
+        </div>
+        <div class="timer" id="timer">Time: 0:00</div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+            <div class="time-text">Time Remaining</div>
+        </div>
+    </div>
+
+    <!-- Add the missing end game div -->
+    <div id="end" style="display: none;" class="container">
+        <h2>¡Excelente!</h2>
+        <div id="finalScore"></div>
+        <div class="end-buttons">
+            <button onclick="startGame()">Play Again</button>
+            <button onclick="resetHighScore()" class="reset-button">Reset High Score</button>
+        </div>
+    </div>
+
+    <div class="keyboard-shortcuts" id="keyboardShortcuts">
+        <h3>Keyboard Shortcuts</h3>
+        <p>Enter = Submit</p>
+        <p>Space = Next</p>
+    </div>
+
+    <!-- Add the missing JavaScript functions -->
+    <script>
+        const verbs = [
+            { verb: "acceder", translation: "to access" },
+            { verb: "aprender", translation: "to learn" },
+            { verb: "atender", translation: "to attend to" },
+            { verb: "barrer", translation: "to sweep" },
+            { verb: "beber", translation: "to drink" },
+            { verb: "ceder", translation: "to give up, to yield" },
+            { verb: "comer", translation: "to eat" },
+            { verb: "comprender", translation: "to understand" },
+            { verb: "convencer", translation: "to convince" },
+            { verb: "crecer", translation: "to grow" },
+            { verb: "creer", translation: "to believe" },
+            { verb: "deber", translation: "to owe, must" },
+            { verb: "descender", translation: "to descend" },
+            { verb: "devolver", translation: "to return (something)" },
+            { verb: "disolver", translation: "to dissolve" },
+            { verb: "envolver", translation: "to wrap" },
+            { verb: "escoger", translation: "to choose" },
+            { verb: "esconder", translation: "to hide" },
+            { verb: "leer", translation: "to read" },
+            { verb: "ofender", translation: "to offend" },
+            { verb: "ofrecer", translation: "to offer" },
+            { verb: "poseer", translation: "to own, to possess" },
+            { verb: "proceder", translation: "to proceed" },
+            { verb: "proteger", translation: "to protect" },
+            { verb: "prometer", translation: "to promise" },
+            { verb: "prender", translation: "to turn on, to catch" },
+            { verb: "pretender", translation: "to intend" },
+            { verb: "responder", translation: "to answer, to respond" },
+            { verb: "romper", translation: "to break" },
+            { verb: "sorprender", translation: "to surprise" },
+            { verb: "suceder", translation: "to happen" },
+            { verb: "suspender", translation: "to suspend" },
+            { verb: "temer", translation: "to fear" },
+            { verb: "tender", translation: "to tend to" },
+            { verb: "toser", translation: "to cough" },
+            { verb: "vender", translation: "to sell" }
+        ];
+
+        // Update conjugation function for ER verbs
+        function conjugateVerb(verb, pronoun) {
+            const stem = verb.slice(0, -2);
+            switch(pronoun) {
+                case "yo": return stem + "o";
+                case "tú": return stem + "es";
+                case "él/ella/usted": return stem + "e";
+                case "nosotros": return stem + "emos";
+                case "ellos/ellas/ustedes": return stem + "en";
+                default: return "";
+            }
+        }
+
+        const pronouns = ["yo", "tú", "él/ella/usted", "nosotros", "ellos/ellas/ustedes"];
+        let currentVerb;
+        let currentPronoun;
+        let score = 0;
+        let total = 0;
+        let startTime;
+        let timerInterval;
+        let playerName = '';
+        let timeLimit = 0;
+        let gameOver = false;
+        let gameMode = '';
+        let streak = 0;
+        let highScore = 0;
+        let bestStreak = 0;
+
+        // Add all the missing functions from ARVerbGame.html
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            const currentTime = Math.floor((Date.now() - startTime) / 1000);
+            const timeRemaining = timeLimit - currentTime;
+            
+            if (timeRemaining <= 0 && !gameOver) {
+                gameOver = true;
+                endGame();
+                return;
+            }
+            
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timer').textContent = 
+                `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const progressPercent = (timeRemaining / timeLimit) * 100;
+            document.querySelector('.progress-fill').style.width = `${progressPercent}%`;
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            return Math.floor((Date.now() - startTime) / 1000);
+        }
+
+        function nextVerb() {
+            const verbObj = verbs[Math.floor(Math.random() * verbs.length)];
+            currentVerb = verbObj.verb;
+            currentPronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
+            
+            if (gameMode === 'conjugation') {
+                document.getElementById('verb').textContent = `${currentVerb} (${verbObj.translation})`;
+                document.getElementById('pronoun').textContent = currentPronoun;
+            } else {
+                const conjugatedVerb = conjugateVerb(currentVerb, currentPronoun);
+                document.getElementById('verb').textContent = `${currentVerb} (${verbObj.translation}) → ${conjugatedVerb}`;
+                document.getElementById('pronoun').textContent = '???';
+            }
+            
+            document.getElementById('answer').value = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('answer').focus();
+        }
+
+        function checkAnswer() {
+            if (gameOver) return;
+            
+            const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+            let isCorrect = false;
+            let correctAnswer = '';
+            
+            if (gameMode === 'conjugation') {
+                correctAnswer = conjugateVerb(currentVerb, currentPronoun);
+                isCorrect = userAnswer === correctAnswer;
+            } else {
+                correctAnswer = currentPronoun;
+                if (correctAnswer === 'él/ella/usted') {
+                    isCorrect = ['él', 'ella', 'usted'].includes(userAnswer);
+                } else if (correctAnswer === 'ellos/ellas/ustedes') {
+                    isCorrect = ['ellos', 'ellas', 'ustedes'].includes(userAnswer);
+                } else {
+                    isCorrect = userAnswer === correctAnswer;
+                }
+            }
+            
+            total++;
+            const feedback = document.getElementById('feedback');
+            
+            if (isCorrect) {
+                feedback.textContent = '¡Correcto!';
+                feedback.className = 'feedback correct';
+                score++;
+                streak++;
+                if (streak > bestStreak) {
+                    bestStreak = streak;
+                }
+            } else {
+                feedback.textContent = `Incorrect. The correct answer is: ${correctAnswer}`;
+                feedback.className = 'feedback incorrect';
+                streak = 0;
+            }
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = total;
+            document.getElementById('streak').textContent = streak;
+            
+            setTimeout(nextVerb, 1500);
+        }
+
+        function endGame() {
+            const finalTime = stopTimer();
+            const minutes = Math.floor(finalTime / 60);
+            const seconds = finalTime % 60;
+            const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const percentage = Math.round((score / total) * 100);
+            if (percentage > highScore) {
+                highScore = percentage;
+                localStorage.setItem('erVerbGameHighScore', highScore);
+            }
+            
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('end').style.display = 'block';
+            
+            document.getElementById('finalScore').innerHTML = `
+                <h3>Great job, ${playerName}!</h3>
+                <p>Final Score: ${score}/${total}</p>
+                <p>Percentage: ${percentage}%</p>
+                <p>High Score: ${highScore}%</p>
+                <p>Best Streak: ${bestStreak}</p>
+                <p>Time: ${timeString}</p>
+            `;
+        }
+
+        function startGame() {
+            score = 0;
+            total = 0;
+            streak = 0;
+            gameOver = false;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('total').textContent = '0';
+            document.getElementById('streak').textContent = '0';
+            document.getElementById('game').style.display = 'block';
+            document.getElementById('end').style.display = 'none';
+            startTimer();
+            nextVerb();
+            document.getElementById('answer').focus();
+        }
+
+        function submitName() {
+            const nameInput = document.getElementById('playerName');
+            playerName = nameInput.value.trim();
+            if (playerName) {
+                document.getElementById('nameInput').style.display = 'none';
+                document.getElementById('modeSelect').style.display = 'block';
+            } else {
+                alert('Please enter your name to start');
+                nameInput.focus();
+            }
+        }
+
+        function selectMode(mode) {
+            gameMode = mode;
+            document.getElementById('modeSelect').style.display = 'none';
+            document.getElementById('difficultySelect').style.display = 'block';
+            
+            // Show accent buttons only in pronoun mode
+            const accentButtons = document.getElementById('accentButtons');
+            const buttons = accentButtons.querySelectorAll('button');
+            
+            if (mode === 'pronoun') {
+                // Show all accent buttons for pronoun mode
+                accentButtons.style.display = 'block';
+                buttons.forEach(button => button.style.display = 'inline-block');
+            } else {
+                // Show only ñ button for conjugation mode
+                accentButtons.style.display = 'block';
+                buttons.forEach(button => {
+                    if (button.textContent === 'ñ') {
+                        button.style.display = 'inline-block';
+                    } else {
+                        button.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        function selectDifficulty(level) {
+            switch(level) {
+                case 'easy':
+                    timeLimit = 60;
+                    break;
+                case 'medium':
+                    timeLimit = 120;
+                    break;
+                case 'hard':
+                    timeLimit = 180;
+                    break;
+            }
+            document.getElementById('difficultySelect').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            startGame();
+        }
+
+        function addAccent(accent) {
+            const input = document.getElementById('answer');
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            input.value = input.value.slice(0, start) + accent + input.value.slice(end);
+            input.selectionStart = input.selectionEnd = start + 1;
+            input.focus();
+        }
+
+        function resetHighScore() {
+            if (confirm('Are you sure you want to reset your high score?')) {
+                highScore = 0;
+                localStorage.removeItem('erVerbGameHighScore');
+                document.getElementById('finalScore').innerHTML = `
+                    <h3>Great job, ${playerName}!</h3>
+                    <p>Final Score: ${score}/${total}</p>
+                    <p>Percentage: ${Math.round((score / total) * 100)}%</p>
+                    <p>High Score: ${highScore}%</p>
+                    <p>Best Streak: ${bestStreak}</p>
+                    <p>Time: ${timeString}</p>
+                `;
+            }
+        }
+
+        // Load high score on startup
+        if (localStorage.getItem('erVerbGameHighScore')) {
+            highScore = parseInt(localStorage.getItem('erVerbGameHighScore'));
+        }
+
+        // Add keyboard event listener
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && document.activeElement === document.getElementById('answer')) {
+                checkAnswer();
+            }
+            if (e.key === 'Enter' && document.activeElement === document.getElementById('playerName')) {
+                submitName();
+            }
+            if (document.getElementById('difficultySelect').style.display === 'block') {
+                if (e.key === '1' || e.key === '2' || e.key === '3') {
+                    e.preventDefault(); // Prevent number from being typed
+                    if (e.key === '1') selectDifficulty('easy');
+                    if (e.key === '2') selectDifficulty('medium');
+                    if (e.key === '3') selectDifficulty('hard');
+                }
+            }
+            if (e.key === ' ' && document.activeElement === document.getElementById('answer')) {
+                e.preventDefault(); // Prevent space from scrolling page
+                nextVerb();
+            }
+        });
+
+        // Add when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('playerName').focus();
+        });
+    </script>
+</body>
+</html> 

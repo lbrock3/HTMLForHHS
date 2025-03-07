@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish IR Verb Practice</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --button-bg: #800020;
+            --button-text: white;
+            --correct-color: #4CAF50;
+            --incorrect-color: #f44336;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .sentence-display {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+
+        .verb-blank {
+            color: var(--button-bg);
+            font-weight: bold;
+            border-bottom: 2px solid var(--button-bg);
+            padding: 0 5px;
+        }
+
+        .conjugation-input {
+            margin: 20px 0;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .feedback {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .feedback-correct {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--correct-color);
+        }
+
+        .feedback-incorrect {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--incorrect-color);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--button-bg);
+            transition: width 0.3s ease;
+            width: 100%;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .conjugation-table {
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .show-hint {
+            background-color: #f0f0f0;
+            color: var(--text-color);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            input[type="text"] {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>IR Verb Conjugation Practice</h1>
+
+    <div id="nameInput" class="container">
+        <h2>Welcome!</h2>
+        <p>Practice conjugating Spanish IR verbs in the present tense.</p>
+        <div class="input-container">
+            <input type="text" id="playerName" placeholder="Enter your name">
+            <button onclick="submitName()">Start</button>
+        </div>
+        <p class="enter-hint">Press Enter to Start</p>
+    </div>
+
+    <!-- Add mode selection div -->
+    <div id="modeSelect" class="container" style="display: none;">
+        <h2>Select Game Mode</h2>
+        <div class="mode-options">
+            <div class="mode-option">
+                <button onclick="selectMode('conjugation')">Conjugation Mode</button>
+                <p class="mode-explanation">Given: yo → You write: hablo</p>
+            </div>
+            <div class="mode-option">
+                <button onclick="selectMode('pronoun')">Pronoun Mode</button>
+                <p class="mode-explanation">Given: hablo → You write: yo</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add difficulty selection div -->
+    <div id="difficultySelect" class="container" style="display: none;">
+        <h2>Select Difficulty</h2>
+        <div class="difficulty-buttons">
+            <button onclick="selectDifficulty('easy')">Easy (1 min) [1]</button>
+            <button onclick="selectDifficulty('medium')">Medium (2 min) [2]</button>
+            <button onclick="selectDifficulty('hard')">Hard (3 min) [3]</button>
+        </div>
+    </div>
+
+    <!-- Add game container -->
+    <div class="container" id="game" style="display: none;">
+        <div class="verb-display">
+            <div id="verb"></div>
+            <div class="pronoun" id="pronoun"></div>
+        </div>
+        <input type="text" id="answer" placeholder="Type your answer">
+        <div id="accentButtons" style="display: none;">
+            <button onclick="addAccent('á')">á</button>
+            <button onclick="addAccent('é')">é</button>
+            <button onclick="addAccent('í')">í</button>
+            <button onclick="addAccent('ó')">ó</button>
+            <button onclick="addAccent('ú')">ú</button>
+            <button onclick="addAccent('ñ')">ñ</button>
+        </div>
+        <div>
+            <button onclick="checkAnswer()">Submit</button>
+            <button onclick="nextVerb()">Next</button>
+        </div>
+        <div class="feedback" id="feedback"></div>
+        <div class="score-display">
+            Score: <span id="score">0</span>/<span id="total">0</span>
+            <div>Streak: <span id="streak">0</span></div>
+        </div>
+        <div class="timer" id="timer">Time: 0:00</div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+            <div class="time-text">Time Remaining</div>
+        </div>
+    </div>
+
+    <!-- Add end game div -->
+    <div id="end" style="display: none;" class="container">
+        <h2>¡Excelente!</h2>
+        <div id="finalScore"></div>
+        <div class="end-buttons">
+            <button onclick="startGame()">Play Again</button>
+            <button onclick="resetHighScore()" class="reset-button">Reset High Score</button>
+        </div>
+    </div>
+
+    <div class="keyboard-shortcuts" id="keyboardShortcuts">
+        <h3>Keyboard Shortcuts</h3>
+        <p>Enter = Submit</p>
+        <p>Space = Next</p>
+    </div>
+
+    <script>
+        const verbs = [
+            { verb: "aburrir", translation: "to bore" },
+            { verb: "acudir", translation: "to attend, to turn up" },
+            { verb: "admitir", translation: "to admit" },
+            { verb: "aplaudir", translation: "to applaud" },
+            { verb: "asistir", translation: "to attend" },
+            { verb: "compartir", translation: "to share" },
+            { verb: "convivir", translation: "to coexist, to live together" },
+            { verb: "cumplir", translation: "to fulfill, to achieve" },
+            { verb: "decidir", translation: "to decide" },
+            { verb: "definir", translation: "to define" },
+            { verb: "describir", translation: "to describe" },
+            { verb: "discutir", translation: "to discuss, to argue" },
+            { verb: "dividir", translation: "to divide" },
+            { verb: "escribir", translation: "to write" },
+            { verb: "existir", translation: "to exist" },
+            { verb: "imprimir", translation: "to print" },
+            { verb: "inducir", translation: "to induce" },
+            { verb: "insistir", translation: "to insist" },
+            { verb: "ocurrir", translation: "to occur, to happen" },
+            { verb: "omitir", translation: "to omit" },
+            { verb: "permitir", translation: "to permit, to allow" },
+            { verb: "persistir", translation: "to persist" },
+            { verb: "prohibir", translation: "to prohibit" },
+            { verb: "recibir", translation: "to receive" },
+            { verb: "repartir", translation: "to distribute, to deliver" },
+            { verb: "residir", translation: "to reside, to live" },
+            { verb: "revivir", translation: "to revive" },
+            { verb: "subir", translation: "to go up, to climb, to upload" },
+            { verb: "sufrir", translation: "to suffer" },
+            { verb: "sumergir", translation: "to submerge" },
+            { verb: "suprimir", translation: "to suppress" },
+            { verb: "transmitir", translation: "to transmit, to broadcast" },
+            { verb: "unir", translation: "to unite, to join" },
+            { verb: "vivir", translation: "to live" }
+        ];
+
+        const pronouns = ["yo", "tú", "él/ella/usted", "nosotros", "ellos/ellas/ustedes"];
+        let currentVerb;
+        let currentPronoun;
+        let score = 0;
+        let total = 0;
+        let startTime;
+        let timerInterval;
+        let playerName = '';
+        let timeLimit = 0;
+        let gameOver = false;
+        let gameMode = '';
+        let streak = 0;
+        let highScore = 0;
+        let bestStreak = 0;
+
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            const currentTime = Math.floor((Date.now() - startTime) / 1000);
+            const timeRemaining = timeLimit - currentTime;
+            
+            if (timeRemaining <= 0 && !gameOver) {
+                gameOver = true;
+                endGame();
+                return;
+            }
+            
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timer').textContent = 
+                `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const progressPercent = (timeRemaining / timeLimit) * 100;
+            document.querySelector('.progress-fill').style.width = `${progressPercent}%`;
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            return Math.floor((Date.now() - startTime) / 1000);
+        }
+
+        function nextVerb() {
+            const verbObj = verbs[Math.floor(Math.random() * verbs.length)];
+            currentVerb = verbObj.verb;
+            currentPronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
+            
+            if (gameMode === 'conjugation') {
+                document.getElementById('verb').textContent = `${currentVerb} (${verbObj.translation})`;
+                document.getElementById('pronoun').textContent = currentPronoun;
+            } else {
+                const conjugatedVerb = conjugateVerb(currentVerb, currentPronoun);
+                document.getElementById('verb').textContent = `${currentVerb} (${verbObj.translation}) → ${conjugatedVerb}`;
+                document.getElementById('pronoun').textContent = '???';
+            }
+            
+            document.getElementById('answer').value = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('answer').focus();
+        }
+
+        function checkAnswer() {
+            if (gameOver) return;
+            
+            const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+            let isCorrect = false;
+            let correctAnswer = '';
+            
+            if (gameMode === 'conjugation') {
+                correctAnswer = conjugateVerb(currentVerb, currentPronoun);
+                isCorrect = userAnswer === correctAnswer;
+            } else {
+                correctAnswer = currentPronoun;
+                if (correctAnswer === 'él/ella/usted') {
+                    isCorrect = ['él', 'ella', 'usted'].includes(userAnswer);
+                } else if (correctAnswer === 'ellos/ellas/ustedes') {
+                    isCorrect = ['ellos', 'ellas', 'ustedes'].includes(userAnswer);
+                } else {
+                    isCorrect = userAnswer === correctAnswer;
+                }
+            }
+            
+            total++;
+            const feedback = document.getElementById('feedback');
+            
+            if (isCorrect) {
+                feedback.textContent = '¡Correcto!';
+                feedback.className = 'feedback correct';
+                score++;
+                streak++;
+                if (streak > bestStreak) {
+                    bestStreak = streak;
+                }
+            } else {
+                feedback.textContent = `Incorrect. The correct answer is: ${correctAnswer}`;
+                feedback.className = 'feedback incorrect';
+                streak = 0;
+            }
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = total;
+            document.getElementById('streak').textContent = streak;
+            
+            setTimeout(nextVerb, 1500);
+        }
+
+        function endGame() {
+            const finalTime = stopTimer();
+            const minutes = Math.floor(finalTime / 60);
+            const seconds = finalTime % 60;
+            const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const percentage = Math.round((score / total) * 100);
+            if (percentage > highScore) {
+                highScore = percentage;
+                localStorage.setItem('irVerbGameHighScore', highScore);
+            }
+            
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('end').style.display = 'block';
+            
+            document.getElementById('finalScore').innerHTML = `
+                <h3>Great job, ${playerName}!</h3>
+                <p>Final Score: ${score}/${total}</p>
+                <p>Percentage: ${percentage}%</p>
+                <p>High Score: ${highScore}%</p>
+                <p>Best Streak: ${bestStreak}</p>
+                <p>Time: ${timeString}</p>
+            `;
+        }
+
+        function startGame() {
+            score = 0;
+            total = 0;
+            streak = 0;
+            gameOver = false;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('total').textContent = '0';
+            document.getElementById('streak').textContent = '0';
+            document.getElementById('game').style.display = 'block';
+            document.getElementById('end').style.display = 'none';
+            startTimer();
+            nextVerb();
+            document.getElementById('answer').focus();
+        }
+
+        function submitName() {
+            const nameInput = document.getElementById('playerName');
+            playerName = nameInput.value.trim();
+            if (playerName) {
+                document.getElementById('nameInput').style.display = 'none';
+                document.getElementById('modeSelect').style.display = 'block';
+            } else {
+                alert('Please enter your name to start');
+                nameInput.focus();
+            }
+        }
+
+        function selectMode(mode) {
+            gameMode = mode;
+            document.getElementById('modeSelect').style.display = 'none';
+            document.getElementById('difficultySelect').style.display = 'block';
+            
+            const accentButtons = document.getElementById('accentButtons');
+            const buttons = accentButtons.querySelectorAll('button');
+            
+            if (mode === 'pronoun') {
+                accentButtons.style.display = 'block';
+                buttons.forEach(button => button.style.display = 'inline-block');
+            } else {
+                accentButtons.style.display = 'block';
+                buttons.forEach(button => {
+                    if (button.textContent === 'ñ') {
+                        button.style.display = 'inline-block';
+                    } else {
+                        button.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        function selectDifficulty(level) {
+            switch(level) {
+                case 'easy':
+                    timeLimit = 60;
+                    break;
+                case 'medium':
+                    timeLimit = 120;
+                    break;
+                case 'hard':
+                    timeLimit = 180;
+                    break;
+            }
+            document.getElementById('difficultySelect').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            startGame();
+        }
+
+        function addAccent(accent) {
+            const input = document.getElementById('answer');
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            input.value = input.value.slice(0, start) + accent + input.value.slice(end);
+            input.selectionStart = input.selectionEnd = start + 1;
+            input.focus();
+        }
+
+        function resetHighScore() {
+            if (confirm('Are you sure you want to reset your high score?')) {
+                highScore = 0;
+                localStorage.removeItem('irVerbGameHighScore');
+                document.getElementById('finalScore').innerHTML = `
+                    <h3>Great job, ${playerName}!</h3>
+                    <p>Final Score: ${score}/${total}</p>
+                    <p>Percentage: ${Math.round((score / total) * 100)}%</p>
+                    <p>High Score: ${highScore}%</p>
+                    <p>Best Streak: ${bestStreak}</p>
+                    <p>Time: ${timeString}</p>
+                `;
+            }
+        }
+
+        // Load high score on startup
+        if (localStorage.getItem('irVerbGameHighScore')) {
+            highScore = parseInt(localStorage.getItem('irVerbGameHighScore'));
+        }
+
+        // Add keyboard event listener
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && document.activeElement === document.getElementById('answer')) {
+                checkAnswer();
+            }
+            if (e.key === 'Enter' && document.activeElement === document.getElementById('playerName')) {
+                submitName();
+            }
+            if (document.getElementById('difficultySelect').style.display === 'block') {
+                if (e.key === '1' || e.key === '2' || e.key === '3') {
+                    e.preventDefault(); // Prevent number from being typed
+                    if (e.key === '1') selectDifficulty('easy');
+                    if (e.key === '2') selectDifficulty('medium');
+                    if (e.key === '3') selectDifficulty('hard');
+                }
+            }
+            if (e.key === ' ' && document.activeElement === document.getElementById('answer')) {
+                e.preventDefault(); // Prevent space from scrolling page
+                nextVerb();
+            }
+        });
+
+        // Add when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('playerName').focus();
+        });
+    </script>
+</body>
+</html> 

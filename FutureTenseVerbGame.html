@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Future Tense Practice</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --button-bg: #800020;
+            --button-text: white;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        h1, h2, h3 {
+            font-family: 'Impact', sans-serif;
+            color: var(--text-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px;
+        }
+
+        .verb-type-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .verb-type-option {
+            padding: 15px 25px;
+            background-color: white;
+            border: 2px solid var(--button-bg);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 200px;
+            text-align: center;
+        }
+
+        .verb-type-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .verb-type-option h3 {
+            margin: 0 0 10px 0;
+        }
+
+        .verb-type-option p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .example {
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+            font-size: 0.8em;
+        }
+
+        .accent-buttons {
+            margin: 10px 0;
+        }
+
+        .accent-button {
+            padding: 5px 10px;
+            margin: 0 2px;
+            font-size: 16px;
+        }
+
+        .feedback {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .feedback-correct {
+            color: green;
+        }
+
+        .feedback-incorrect {
+            color: red;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--button-bg);
+            transition: width 0.3s ease;
+            width: 100%;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .verb-display {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .pronoun {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--button-bg);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: var(--bg-color);
+            margin: 15% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+            border: 2px solid var(--button-bg);
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--button-bg);
+        }
+
+        .help-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .help-section h3 {
+            color: var(--button-bg);
+            margin-bottom: 10px;
+        }
+
+        .results {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .results p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .results strong {
+            color: var(--button-bg);
+        }
+
+        .regularity-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .regularity-option {
+            padding: 10px 20px;
+            background-color: white;
+            border: 2px solid var(--button-bg);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .regularity-option.selected {
+            background-color: var(--button-bg);
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            .verb-type-options {
+                flex-direction: column;
+                align-items: center;
+            }
+            .verb-type-option {
+                width: 90%;
+                max-width: none;
+                margin: 5px 0;
+            }
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Spanish Future Tense Practice</h1>
+    
+    <!-- Name Entry Section -->
+    <div id="nameEntry" class="container">
+        <h2>Enter Your Name</h2>
+        <input type="text" id="playerName" placeholder="Your Name">
+        <button onclick="submitName()">Start Game</button>
+    </div>
+
+    <!-- Verb Type Selection -->
+    <div id="verbTypeSelect" class="container" style="display: none;">
+        <h2>Choose Your Practice Options</h2>
+        
+        <!-- Regularity Selection -->
+        <div class="regularity-options">
+            <div class="regularity-option" data-type="regular">Regular Verbs</div>
+            <div class="regularity-option" data-type="irregular">Irregular Verbs</div>
+            <div class="regularity-option" data-type="both">Both</div>
+        </div>
+
+        <p class="instruction">Choose which verb types to practice:</p>
+        <div class="verb-type-options">
+            <div class="verb-type-option" data-type="ar">
+                <h3>-AR Verbs</h3>
+                <p>hablar, estudiar, trabajar</p>
+                <div class="example">Example: hablaré</div>
+            </div>
+            <div class="verb-type-option" data-type="er">
+                <h3>-ER Verbs</h3>
+                <p>comer, saber, poder</p>
+                <div class="example">Example: comeré</div>
+            </div>
+            <div class="verb-type-option" data-type="ir">
+                <h3>-IR Verbs</h3>
+                <p>vivir, salir, venir</p>
+                <div class="example">Example: viviré</div>
+            </div>
+        </div>
+        <button id="startButton">Start Practice</button>
+    </div>
+
+    <!-- Game Section -->
+    <div id="game" class="container" style="display: none;">
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <div class="timer" id="timer">Time: 2:00</div>
+        
+        <div class="verb-display">
+            <div id="verb" style="font-size: 24px; margin: 20px 0;"></div>
+            <div id="verbType"></div>
+            <div id="form" class="pronoun"></div>
+        </div>
+
+        <input type="text" id="answer" placeholder="Type your answer">
+        
+        <div class="accent-buttons">
+            <button onclick="insertAccent('á')" class="accent-button" title="Alt + a">á</button>
+            <button onclick="insertAccent('é')" class="accent-button" title="Alt + e">é</button>
+            <button onclick="insertAccent('í')" class="accent-button" title="Alt + i">í</button>
+            <button onclick="insertAccent('ó')" class="accent-button" title="Alt + o">ó</button>
+            <button onclick="insertAccent('ú')" class="accent-button" title="Alt + u">ú</button>
+            <button onclick="insertAccent('ñ')" class="accent-button" title="Alt + n">ñ</button>
+        </div>
+
+        <button onclick="submitAnswer()">Submit</button>
+        
+        <div id="feedback" class="feedback"></div>
+        
+        <div class="stats">
+            <div id="score">Score: 0</div>
+            <div id="streak">Current Streak: 0</div>
+            <div id="highScore">Best Streak: 0</div>
+        </div>
+    </div>
+
+    <!-- End Game Section -->
+    <div id="end" class="container" style="display: none;">
+        <div id="finalMessage"></div>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeHelp()">&times;</span>
+            <h2>How to Play</h2>
+            <div class="help-section">
+                <h3>Future Tense</h3>
+                <p>The future tense is used to talk about actions that will happen in the future.</p>
+                <p>Regular verbs keep their infinitive and add: -é, -ás, -á, -emos, -án</p>
+            </div>
+            <div class="help-section">
+                <h3>Irregular Stems</h3>
+                <ul>
+                    <li>Drop letter: saber → sabr-, haber → habr-, poder → podr-, querer → querr-</li>
+                    <li>Change to -dr-: poner → pondr-, salir → saldr-, tener → tendr-, venir → vendr-</li>
+                    <li>Unique: decir → dir-, hacer → har-</li>
+                </ul>
+            </div>
+            <div class="keyboard-shortcuts">
+                <h3>Keyboard Shortcuts</h3>
+                <p>Alt + vowel for accents (á, é, í, ó, ú)</p>
+                <p>Alt + n for ñ</p>
+                <p>Enter to submit</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Define verb lists
+        const regularArVerbs = [
+            { verb: "hablar", translation: "to speak" },
+            { verb: "estudiar", translation: "to study" },
+            { verb: "trabajar", translation: "to work" },
+            { verb: "caminar", translation: "to walk" },
+            { verb: "bailar", translation: "to dance" },
+            { verb: "cantar", translation: "to sing" },
+            { verb: "cocinar", translation: "to cook" },
+            { verb: "dibujar", translation: "to draw" },
+            { verb: "escuchar", translation: "to listen" },
+            { verb: "mirar", translation: "to watch" }
+        ];
+
+        const regularErVerbs = [
+            { verb: "comer", translation: "to eat" },
+            { verb: "beber", translation: "to drink" },
+            { verb: "correr", translation: "to run" },
+            { verb: "aprender", translation: "to learn" },
+            { verb: "vender", translation: "to sell" },
+            { verb: "comprender", translation: "to understand" }
+        ];
+
+        const regularIrVerbs = [
+            { verb: "vivir", translation: "to live" },
+            { verb: "escribir", translation: "to write" },
+            { verb: "abrir", translation: "to open" },
+            { verb: "recibir", translation: "to receive" },
+            { verb: "subir", translation: "to go up" }
+        ];
+
+        // Irregular verbs grouped by pattern
+        const dropLetterVerbs = [
+            { verb: "saber", translation: "to know", stem: "sabr" },
+            { verb: "haber", translation: "to have", stem: "habr" },
+            { verb: "poder", translation: "to be able", stem: "podr" },
+            { verb: "querer", translation: "to want", stem: "querr" }
+        ];
+
+        const drPatternVerbs = [
+            { verb: "poner", translation: "to put", stem: "pondr" },
+            { verb: "salir", translation: "to leave", stem: "saldr" },
+            { verb: "tener", translation: "to have", stem: "tendr" },
+            { verb: "venir", translation: "to come", stem: "vendr" }
+        ];
+
+        const uniqueIrregularVerbs = [
+            { verb: "decir", translation: "to say", stem: "dir" },
+            { verb: "hacer", translation: "to do/make", stem: "har" }
+        ];
+
+        // Future tense endings
+        const futureEndings = {
+            'yo': 'é',
+            'tú': 'ás',
+            'él': 'á',
+            'ella': 'á',
+            'usted': 'á',
+            'nosotros': 'emos',
+            'nosotras': 'emos',
+            'ellos': 'án',
+            'ellas': 'án',
+            'ustedes': 'án'
+        };
+
+        // Game state variables
+        let currentVerbs = [];
+        let score = 0;
+        let streak = 0;
+        let bestStreak = 0;
+        let timer = null;
+        let timeLeft = 120;
+        let startTime = null;
+        let gameActive = false;
+        let playerName = '';
+        let selectedVerbTypes = new Set();
+        let selectedRegularity = '';
+        let isProcessingAnswer = false;
+        let totalAttempts = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add click handlers for verb type options
+            const verbTypeOptions = document.querySelectorAll('.verb-type-option');
+            verbTypeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const type = this.dataset.type;
+                    if (selectedVerbTypes.has(type)) {
+                        selectedVerbTypes.delete(type);
+                        this.style.backgroundColor = 'white';
+                        this.style.color = 'black';
+                        this.style.borderColor = 'var(--button-bg)';
+                    } else {
+                        selectedVerbTypes.add(type);
+                        this.style.backgroundColor = 'var(--button-bg)';
+                        this.style.color = 'white';
+                        this.style.borderColor = 'var(--button-bg)';
+                    }
+                });
+            });
+
+            // Add click handlers for regularity options
+            const regularityOptions = document.querySelectorAll('.regularity-option');
+            regularityOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    regularityOptions.forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    selectedRegularity = this.dataset.type;
+                });
+            });
+
+            document.getElementById('startButton').addEventListener('click', startWithSelected);
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.altKey) {
+                    switch(e.key) {
+                        case 'a': insertAccent('á'); break;
+                        case 'e': insertAccent('é'); break;
+                        case 'i': insertAccent('í'); break;
+                        case 'o': insertAccent('ó'); break;
+                        case 'u': insertAccent('ú'); break;
+                        case 'n': insertAccent('ñ'); break;
+                    }
+                }
+            });
+
+            // Add enter key handler for name input
+            document.getElementById('playerName').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitName();
+                }
+            });
+
+            // Add enter key handler for answer input
+            document.getElementById('answer').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !isProcessingAnswer) {
+                    e.preventDefault();
+                    submitAnswer();
+                }
+            });
+        });
+
+        function submitName() {
+            const nameInput = document.getElementById('playerName');
+            playerName = nameInput.value.trim();
+            if (playerName) {
+                document.getElementById('nameEntry').style.display = 'none';
+                document.getElementById('verbTypeSelect').style.display = 'block';
+            } else {
+                alert('Please enter your name to start');
+                nameInput.focus();
+            }
+        }
+
+        function startWithSelected() {
+            if (selectedVerbTypes.size === 0) {
+                alert('Please select at least one verb type');
+                return;
+            }
+
+            if (!selectedRegularity) {
+                alert('Please select regular, irregular, or both');
+                return;
+            }
+
+            currentVerbs = [];
+            
+            // Add verbs based on selected types and regularity
+            if (selectedRegularity === 'regular' || selectedRegularity === 'both') {
+                if (selectedVerbTypes.has('ar')) currentVerbs = currentVerbs.concat(regularArVerbs);
+                if (selectedVerbTypes.has('er')) currentVerbs = currentVerbs.concat(regularErVerbs);
+                if (selectedVerbTypes.has('ir')) currentVerbs = currentVerbs.concat(regularIrVerbs);
+            }
+            
+            if (selectedRegularity === 'irregular' || selectedRegularity === 'both') {
+                if (selectedVerbTypes.has('er') || selectedVerbTypes.has('ir')) {
+                    currentVerbs = currentVerbs.concat(dropLetterVerbs, drPatternVerbs, uniqueIrregularVerbs);
+                }
+            }
+
+            document.getElementById('verbTypeSelect').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            startGame();
+        }
+
+        function conjugateVerb(verb, pronoun) {
+            let stem;
+            
+            // Check if it's an irregular verb
+            if (verb.stem) {
+                stem = verb.stem;
+            } else {
+                // Regular verb - use the full infinitive
+                stem = verb.verb;
+            }
+            
+            return stem + futureEndings[pronoun];
+        }
+
+        function submitAnswer() {
+            if (!gameActive || isProcessingAnswer) return;
+            
+            isProcessingAnswer = true;
+            totalAttempts++;
+
+            const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+            const verbElement = document.getElementById('verb');
+            const verbText = verbElement.textContent.split(' ')[0];
+            const pronoun = document.getElementById('form').textContent;
+            
+            // Find the verb object from currentVerbs
+            const verb = currentVerbs.find(v => v.verb === verbText);
+            const correctAnswer = conjugateVerb(verb, pronoun);
+            
+            if (userAnswer === correctAnswer) {
+                score++;
+                streak++;
+                if (streak > bestStreak) {
+                    bestStreak = streak;
+                    localStorage.setItem('futureTenseGameBestStreak', bestStreak);
+                }
+                showFeedback(true);
+            } else {
+                streak = 0;
+                showFeedback(false, correctAnswer);
+            }
+            
+            updateDisplay();
+            
+            // Set timeout for next verb
+            if (window.nextVerbTimeout) {
+                clearTimeout(window.nextVerbTimeout);
+            }
+            
+            window.nextVerbTimeout = setTimeout(() => {
+                if (gameActive) {
+                    nextVerb();
+                }
+            }, 1500);
+        }
+
+        function nextVerb() {
+            if (!gameActive || currentVerbs.length === 0) return;
+            
+            isProcessingAnswer = false;
+            
+            if (window.nextVerbTimeout) {
+                clearTimeout(window.nextVerbTimeout);
+                window.nextVerbTimeout = null;
+            }
+            
+            const randomVerb = currentVerbs[Math.floor(Math.random() * currentVerbs.length)];
+            const pronouns = ['yo', 'tú', 'él', 'ella', 'usted', 'nosotros', 'nosotras', 'ellos', 'ellas', 'ustedes'];
+            const randomPronoun = pronouns[Math.floor(Math.random() * pronouns.length)];
+            
+            document.getElementById('verb').textContent = `${randomVerb.verb} (${randomVerb.translation})`;
+            document.getElementById('verbType').textContent = `Verb Type: -${randomVerb.verb.slice(-2)}`;
+            document.getElementById('form').textContent = randomPronoun;
+            
+            document.getElementById('answer').value = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('answer').focus();
+        }
+
+        function showFeedback(isCorrect, correctAnswer = '') {
+            const feedback = document.getElementById('feedback');
+            if (isCorrect) {
+                feedback.textContent = '¡Correcto!';
+                feedback.className = 'feedback feedback-correct';
+            } else {
+                feedback.textContent = `Incorrect. The correct answer is: ${correctAnswer}`;
+                feedback.className = 'feedback feedback-incorrect';
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').textContent = `Score: ${score}`;
+            document.getElementById('streak').textContent = `Current Streak: ${streak}`;
+            document.getElementById('highScore').textContent = `Best Streak: ${bestStreak}`;
+        }
+
+        function startTimer() {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+
+            startTime = Date.now();
+            timeLeft = 120;
+            
+            updateTimer();
+            updateDisplay();
+
+            timer = setInterval(() => {
+                const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+                timeLeft = Math.max(120 - elapsedSeconds, 0);
+                
+                updateTimer();
+                updateDisplay();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 100);
+        }
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const timerDisplay = document.getElementById('timer');
+            if (timerDisplay) {
+                timerDisplay.textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            const progressFill = document.getElementById('progressFill');
+            if (progressFill) {
+                const percentageLeft = (timeLeft / 120) * 100;
+                progressFill.style.width = `${percentageLeft}%`;
+            }
+        }
+
+        function startGame() {
+            resetGameState();
+            score = 0;
+            streak = 0;
+            totalAttempts = 0;
+            gameActive = true;
+            
+            updateDisplay();
+            startTimer();
+            nextVerb();
+        }
+
+        function resetGameState() {
+            if (window.nextVerbTimeout) {
+                clearTimeout(window.nextVerbTimeout);
+                window.nextVerbTimeout = null;
+            }
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+            
+            startTime = null;
+            timeLeft = 120;
+            isProcessingAnswer = false;
+            gameActive = true;
+            
+            document.getElementById('answer').value = '';
+            document.getElementById('feedback').textContent = '';
+        }
+
+        function endGame() {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+            
+            gameActive = false;
+            
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('end').style.display = 'block';
+            
+            const percentage = totalAttempts > 0 ? Math.round((score / totalAttempts) * 100) : 0;
+            
+            const finalMessage = document.getElementById('finalMessage');
+            finalMessage.innerHTML = `
+                <h2>¡Tiempo!</h2>
+                <h3>Results for ${playerName}:</h3>
+                <div class="results">
+                    <p><strong>Final Score:</strong> ${score}</p>
+                    <p><strong>Best Streak:</strong> ${bestStreak}</p>
+                    <p><strong>Accuracy:</strong> ${percentage}%</p>
+                    <p><strong>Total Attempts:</strong> ${totalAttempts}</p>
+                </div>
+            `;
+        }
+
+        function insertAccent(accent) {
+            const input = document.getElementById('answer');
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const text = input.value;
+            input.value = text.slice(0, start) + accent + text.slice(end);
+            input.selectionStart = input.selectionEnd = start + 1;
+            input.focus();
+        }
+
+        function restartGame() {
+            document.getElementById('end').style.display = 'none';
+            document.getElementById('verbTypeSelect').style.display = 'block';
+            selectedVerbTypes.clear();
+            selectedRegularity = '';
+            
+            document.querySelectorAll('.verb-type-option').forEach(option => {
+                option.style.backgroundColor = 'white';
+                option.style.color = 'black';
+                option.style.borderColor = 'var(--button-bg)';
+            });
+            document.querySelectorAll('.regularity-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+        }
+    </script>
+</body>
+</html>

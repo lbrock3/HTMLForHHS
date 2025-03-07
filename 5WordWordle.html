@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5-Letter Spanish Wordle</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f2f5;
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-rows: repeat(6, 1fr);
+            gap: 5px;
+            margin: 20px;
+        }
+        
+        .row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+        }
+        
+        .tile {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #d3d6da;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .keyboard {
+            display: grid;
+            gap: 5px;
+            margin: 20px;
+        }
+        
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .key {
+            padding: 15px;
+            min-width: 30px;
+            border: none;
+            border-radius: 4px;
+            background-color: #d3d6da;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .correct {
+            background-color: #6aaa64;
+            color: white;
+            border-color: #6aaa64;
+        }
+        
+        .present {
+            background-color: #c9b458;
+            color: white;
+            border-color: #c9b458;
+        }
+        
+        .absent {
+            background-color: #787c7e;
+            color: white;
+            border-color: #787c7e;
+        }
+        
+        .message {
+            margin: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+            text-align: center;
+        }
+
+        .word-length {
+            margin: 10px;
+            font-weight: bold;
+            color: #444;
+        }
+        
+        #newWordButton {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        #newWordButton:hover {
+            background-color: #45a049;
+        }
+        
+        .hint-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+        }
+        
+        .hint-button:hover {
+            background-color: #45a049;
+        }
+        
+        .hint-text {
+            margin: 10px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            color: #666;
+            font-style: italic;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>5-Letter Spanish Wordle</h1>
+    <div class="word-length">All words are 5 letters</div>
+    <button class="hint-button" id="hintButton">Show Hint</button>
+    <div class="hint-text" id="hintText"></div>
+    <div class="game-board" id="gameBoard"></div>
+    <div class="keyboard" id="keyboard"></div>
+    <div class="message" id="message"></div>
+    <div class="button-container">
+        <button id="newWordButton" style="display: none;">New Word</button>
+        <button id="retryButton" style="display: none;">Retry Same Word</button>
+    </div>
+
+    <script>
+    const WORDS = [
+        "abajo", "actua", "adult", "aereo", "aforo", "agudo", "aguas", "ahora",
+        "altos", "amado", "amigo", "ancho", "angel", "anual", "anula", "arbol",
+        "arena", "asado", "asoma", "asume", "atado", "audio", "avion", "anejo",
+        "baila", "bajen", "balon", "barco", "bomba", "bravo", "breve", "broma",
+        "bulto", "burla", "busca", "cabal", "calma", "calle", "canto", "carro",
+        "causa", "cebra", "cifra", "clave", "clima", "comer", "corro", "costa",
+        "cruda", "cuero", "cumple", "curva", "datos", "debil", "deuda", "disco",
+        "drama", "dulce", "duros", "echar", "enano", "estar", "falsa", "fuego",
+        "gallo", "gente", "golpe", "gramo", "grupo", "habla", "hondo", "horas",
+        "huevo", "ideas", "joven", "junta", "justo", "llave", "lapiz", "lento",
+        "llama", "locos", "lomos", "lucha", "madre", "magia", "mando", "manga",
+        "manos", "matar", "mayor", "medio", "mente", "miedo", "mirar", "mismo",
+        "mocha", "mundo", "nevar", "nunca", "nubes", "oirse", "ojala", "opera",
+        "oruga", "padre", "pagar", "panza", "papel", "parar", "parte", "pecho",
+        "perro", "pleno", "poder", "poner", "poeta", "preve", "prisa", "queso",
+        "quiso", "rasgo", "raton", "razon", "rezar", "ricos", "ritmo", "rizos",
+        "robar", "rocas", "rodar", "ronda", "rotos", "rubia", "rudos", "sabor",
+        "sacar", "salen", "salsa", "sapos", "segui", "sello", "señor", "serio",
+        "silba", "sirve", "sobre", "solos", "sordo", "suben", "suelo", "tengo",
+        "tarde", "tazas", "tenis", "terco", "tigre", "tinto", "tirar", "tocar",
+        "toman", "tonos", "torso", "total", "trago", "trato", "trigo", "trono",
+        "tropa", "unico", "usado", "usina", "vacio", "valle", "velar", "velas",
+        "venir", "vicio", "viejo", "visto", "votar", "yacer", "yegua", "yermo",
+        "yerno", "lomos", "crudo", "dulce", "falso", "carta", "banco", "rampa",
+        "nacer", "tenso", "patas", "ruido", "frito", "lente", "ancho", "cesta",
+        "costo", "golfo", "pobre", "campo", "canto", "manto", "lanza", "ruego",
+        "bolsa", "canas", "cobre", "hueso", "luces", "lugar", "salir", "risas",
+        "llama"
+    ];
+    
+    function normalizeString(str) {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+    
+    const MAX_ATTEMPTS = 6;
+    let currentAttempt = 0;
+    let currentWord = '';
+    let gameOver = false;
+    let targetWord = WORDS[Math.floor(Math.random() * WORDS.length)];
+    let hintShown = false;
+    
+    // Add hints object
+    const HINTS = {
+        "abajo": "Opposite of up",
+        "actua": "To perform or act",
+        "adult": "Grown-up person",
+        "aereo": "Related to air",
+        "aforo": "Capacity of a venue",
+        "agudo": "Sharp or acute",
+        "aguas": "Plural of water",
+        "ahora": "Right now",
+        "altos": "Tall or high",
+        "amado": "Loved one",
+        "amigo": "A close friend",
+        "ancho": "Wide",
+        "angel": "Celestial being",
+        "anual": "Yearly",
+        "arbol": "Grows in nature, has leaves",
+        "arena": "Found on beaches",
+        "avion": "Flies in the sky",
+        "baila": "To dance",
+        "barco": "Sails on water",
+        "bravo": "Brave or fierce",
+        "calle": "Where people walk in city",
+        "carro": "Transportation with wheels",
+        "cebra": "Black and white striped animal",
+        "clima": "Weather conditions",
+        "dulce": "Tastes sweet",
+        "fuego": "Hot and burns",
+        "gallo": "Wakes you up in morning",
+        "huevo": "Comes from a chicken",
+        "joven": "Not old",
+        "llama": "Fire or Andean animal",
+        "madre": "Female parent",
+        "mundo": "We all live here",
+        "nubes": "In the sky, bring rain",
+        "padre": "Male parent",
+        "papel": "You write on it",
+        "perro": "Man's best friend",
+        "playa": "Where sand meets ocean",
+        "queso": "Dairy product",
+        "reloj": "Tells time",
+        "tigre": "Big striped cat",
+        "verde": "Color of grass"
+        // Add more hints as needed
+    };
+    
+    function initializeGame(keepSameWord = false) {
+        currentAttempt = 0;
+        currentWord = '';
+        gameOver = false;
+        
+        if (!keepSameWord) {
+            targetWord = WORDS[Math.floor(Math.random() * WORDS.length)];
+        }
+        
+        hintShown = false;
+        
+        const gameBoard = document.getElementById('gameBoard');
+        gameBoard.innerHTML = '';
+        
+        document.getElementById('newWordButton').style.display = 'none';
+        document.getElementById('retryButton').style.display = 'none';
+        document.getElementById('message').style.display = 'none';
+        document.getElementById('hintText').style.display = 'none';
+        document.getElementById('hintButton').textContent = 'Show Hint';
+        
+        const hint = HINTS[targetWord] || "No hint available";
+        document.getElementById('hintText').textContent = hint;
+        
+        for (let i = 0; i < MAX_ATTEMPTS; i++) {
+            const row = document.createElement('div');
+            row.className = 'row';
+            for (let j = 0; j < 5; j++) {
+                const tile = document.createElement('div');
+                tile.className = 'tile';
+                row.appendChild(tile);
+            }
+            gameBoard.appendChild(row);
+        }
+        
+        createKeyboard();
+    }
+    
+    function createKeyboard() {
+        const keyboard = document.getElementById('keyboard');
+        keyboard.innerHTML = '';
+        const keys = [
+            ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+            ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ñ'],
+            ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '⌫']
+        ];
+        
+        keys.forEach(row => {
+            const keyboardRow = document.createElement('div');
+            keyboardRow.className = 'keyboard-row';
+            row.forEach(key => {
+                const button = document.createElement('button');
+                button.className = 'key';
+                button.textContent = key;
+                button.onclick = () => handleKeyInput(key);
+                keyboardRow.appendChild(button);
+            });
+            keyboard.appendChild(keyboardRow);
+        });
+    }
+    
+    function handleKeyInput(key) {
+        if (gameOver) return;
+        
+        if (key === '⌫') {
+            currentWord = currentWord.slice(0, -1);
+        } else if (key === 'ENTER') {
+            if (currentWord.length === 5) {
+                checkWord();
+            }
+        } else if (currentWord.length < 5) {
+            currentWord += key.toLowerCase();
+        }
+        
+        updateDisplay();
+    }
+    
+    function updateDisplay() {
+        const row = document.querySelectorAll('.row')[currentAttempt];
+        const tiles = row.querySelectorAll('.tile');
+        
+        tiles.forEach((tile, i) => {
+            tile.textContent = currentWord[i] || '';
+            tile.className = 'tile';
+        });
+    }
+    
+    function checkWord() {
+        const row = document.querySelectorAll('.row')[currentAttempt];
+        const tiles = row.querySelectorAll('.tile');
+        
+        let correct = 0;
+        const letterCounts = {};
+        const normalizedTarget = normalizeString(targetWord);
+        
+        normalizedTarget.split('').forEach(letter => {
+            letterCounts[letter] = (letterCounts[letter] || 0) + 1;
+        });
+        
+        const normalizedGuess = normalizeString(currentWord);
+        
+        // First pass: mark correct letters
+        normalizedGuess.split('').forEach((letter, i) => {
+            if (letter === normalizedTarget[i]) {
+                tiles[i].classList.add('correct');
+                correct++;
+                letterCounts[letter]--;
+            }
+        });
+        
+        // Second pass: mark present/absent letters
+        normalizedGuess.split('').forEach((letter, i) => {
+            if (letter !== normalizedTarget[i]) {
+                if (letterCounts[letter] > 0) {
+                    tiles[i].classList.add('present');
+                    letterCounts[letter]--;
+                } else {
+                    tiles[i].classList.add('absent');
+                }
+            }
+        });
+        
+        if (correct === 5) {
+            gameOver = true;
+            showMessage('¡Felicitaciones!', 'success');
+            document.getElementById('newWordButton').style.display = 'block';
+            document.getElementById('retryButton').style.display = 'none';
+        } else if (currentAttempt === MAX_ATTEMPTS - 1) {
+            gameOver = true;
+            showMessage(`Game Over! The word was "${targetWord}"`, 'error');
+            document.getElementById('newWordButton').style.display = 'block';
+            document.getElementById('retryButton').style.display = 'block';
+        }
+        
+        currentAttempt++;
+        currentWord = '';
+    }
+    
+    function showMessage(text, type) {
+        const message = document.getElementById('message');
+        message.textContent = text;
+        message.style.display = 'block';
+        message.style.backgroundColor = type === 'error' ? '#f44336' : '#4caf50';
+        message.style.color = 'white';
+    }
+    
+    function toggleHint() {
+        const hintText = document.getElementById('hintText');
+        const hintButton = document.getElementById('hintButton');
+        
+        if (hintShown) {
+            hintText.style.display = 'none';
+            hintButton.textContent = 'Show Hint';
+        } else {
+            hintText.style.display = 'block';
+            hintButton.textContent = 'Hide Hint';
+        }
+        
+        hintShown = !hintShown;
+    }
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            handleKeyInput('ENTER');
+        } else if (e.key === 'Backspace') {
+            handleKeyInput('⌫');
+        } else if (/^[a-zñ]$/i.test(e.key)) {
+            handleKeyInput(e.key.toUpperCase());
+        }
+    });
+    
+    document.getElementById('newWordButton').addEventListener('click', () => initializeGame(false));
+    document.getElementById('retryButton').addEventListener('click', () => initializeGame(true));
+    document.getElementById('hintButton').addEventListener('click', toggleHint);
+    
+    initializeGame();
+    </script>
+</body>
+</html>

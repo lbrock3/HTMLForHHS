@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Articles Practice</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --button-bg: #800020;
+            --button-text: white;
+            --correct-color: #4CAF50;
+            --incorrect-color: #f44336;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .option-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .option-button {
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: 2px solid var(--button-bg);
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--button-bg);
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .option-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .option-button.selected {
+            background-color: var(--button-bg);
+            color: white;
+        }
+
+        .word-display {
+            font-size: 1.5em;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .article-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .article-button {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            background-color: #f0f0f0;
+            border: 2px solid var(--button-bg);
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--button-bg);
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .article-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .feedback {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .feedback-correct {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--correct-color);
+        }
+
+        .feedback-incorrect {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--incorrect-color);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--button-bg);
+            transition: width 0.3s ease;
+            width: 100%;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .article-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Spanish Articles Practice</h1>
+    
+    <!-- Name Entry Section -->
+    <div id="nameEntry" class="container">
+        <h2>Enter Your Name</h2>
+        <input type="text" id="playerName" placeholder="Your Name">
+        <div class="options-container">
+            <h3>Choose Article Types to Practice:</h3>
+            <div class="option-group">
+                <label class="option-button">
+                    <input type="checkbox" value="definite" onchange="handleOptionChange(this)">
+                    Definite Articles (el, la, los, las)
+                </label>
+                <label class="option-button">
+                    <input type="checkbox" value="indefinite" onchange="handleOptionChange(this)">
+                    Indefinite Articles (un, una, unos, unas)
+                </label>
+            </div>
+        </div>
+        <button onclick="submitName()">Start Game</button>
+    </div>
+
+    <!-- Game Section -->
+    <div id="game" class="container" style="display: none;">
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <div class="timer" id="timer">Time: 3:00</div>
+        
+        <div class="word-display">
+            <div id="articleType"></div>
+            <div id="wordDisplay"></div>
+        </div>
+
+        <div id="definiteButtons" class="article-buttons" style="display: none;">
+            <button class="article-button" onclick="checkAnswer('el')">el</button>
+            <button class="article-button" onclick="checkAnswer('la')">la</button>
+            <button class="article-button" onclick="checkAnswer('los')">los</button>
+            <button class="article-button" onclick="checkAnswer('las')">las</button>
+        </div>
+
+        <div id="indefiniteButtons" class="article-buttons" style="display: none;">
+            <button class="article-button" onclick="checkAnswer('un')">un</button>
+            <button class="article-button" onclick="checkAnswer('una')">una</button>
+            <button class="article-button" onclick="checkAnswer('unos')">unos</button>
+            <button class="article-button" onclick="checkAnswer('unas')">unas</button>
+        </div>
+        
+        <div id="feedback" class="feedback"></div>
+        
+        <div class="stats">
+            <div id="score">Score: 0</div>
+            <div id="streak">Current Streak: 0</div>
+            <div id="highScore">Best Streak: 0</div>
+        </div>
+    </div>
+
+    <!-- End Game Section -->
+    <div id="end" class="container" style="display: none;">
+        <div id="finalMessage"></div>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+
+<script>
+    // Game state variables
+    let score = 0;
+    let streak = 0;
+    let bestStreak = 0;
+    let timer = null;
+    let timeLeft = 180; // 3 minutes
+    let startTime = null;
+    let gameActive = false;
+    let playerName = '';
+    let isProcessingAnswer = false;
+    let totalAttempts = 0;
+    let currentWord = null;
+    let selectedArticleTypes = new Set();
+    let currentArticleType = null;
+
+    // Word list with classifications
+    const words = {
+        "casas": { gender: "feminine", number: "plural" },
+        "perro": { gender: "masculine", number: "singular" },
+        "coche": { gender: "masculine", number: "singular" },
+        "mesas": { gender: "feminine", number: "plural" },
+        "gato": { gender: "masculine", number: "singular" },
+        "silla": { gender: "feminine", number: "singular" },
+        "árbol": { gender: "masculine", number: "singular" },
+        "ventana": { gender: "feminine", number: "singular" },
+        "sol": { gender: "masculine", number: "singular" },
+        "luna": { gender: "feminine", number: "singular" },
+        "agua": { gender: "masculine", number: "singular" },
+        "estrella": { gender: "feminine", number: "singular" },
+        "niño": { gender: "masculine", number: "singular" },
+        "niña": { gender: "feminine", number: "singular" },
+        "hombre": { gender: "masculine", number: "singular" },
+        "mujer": { gender: "feminine", number: "singular" },
+        "día": { gender: "masculine", number: "singular" },
+        "noche": { gender: "feminine", number: "singular" },
+        "zapatos": { gender: "masculine", number: "plural" },
+        "camisa": { gender: "feminine", number: "singular" },
+        "pantalón": { gender: "masculine", number: "singular" },
+        "falda": { gender: "feminine", number: "singular" },
+        "pájaro": { gender: "masculine", number: "singular" },
+        "flores": { gender: "feminine", number: "plural" },
+        "pez": { gender: "masculine", number: "singular" },
+        "mariposas": { gender: "feminine", number: "plural" },
+        "relojes": { gender: "masculine", number: "plural" },
+        "campana": { gender: "feminine", number: "singular" },
+        "río": { gender: "masculine", number: "singular" },
+        "montaña": { gender: "feminine", number: "singular" },
+        "mar": { gender: "masculine", number: "singular" },
+        "playa": { gender: "feminine", number: "singular" },
+        "bosque": { gender: "masculine", number: "singular" },
+        "selva": { gender: "feminine", number: "singular" },
+        "campo": { gender: "masculine", number: "singular" },
+        "ciudad": { gender: "feminine", number: "singular" },
+        "pueblo": { gender: "masculine", number: "singular" },
+        "calle": { gender: "feminine", number: "singular" },
+        "camino": { gender: "masculine", number: "singular" },
+        "escuela": { gender: "feminine", number: "singular" },
+        "profesor": { gender: "masculine", number: "singular" },
+        "profesora": { gender: "feminine", number: "singular" },
+        "cuaderno": { gender: "masculine", number: "singular" },
+        "hoja": { gender: "feminine", number: "singular" },
+        "bolígrafos": { gender: "masculine", number: "plural" },
+        "plumas": { gender: "feminine", number: "plural" },
+        "teléfono": { gender: "masculine", number: "singular" },
+        "computadoras": { gender: "feminine", number: "plural" },
+        "teclado": { gender: "masculine", number: "singular" },
+        "pantalla": { gender: "feminine", number: "singular" },
+        "ratón": { gender: "masculine", number: "singular" },
+        "impresora": { gender: "feminine", number: "singular" },
+        "baño": { gender: "masculine", number: "singular" },
+        "cocina": { gender: "feminine", number: "singular" },
+        "comedor": { gender: "masculine", number: "singular" },
+        "sala": { gender: "feminine", number: "singular" },
+        "dormitorio": { gender: "masculine", number: "singular" },
+        "camas": { gender: "feminine", number: "plural" },
+        "armario": { gender: "masculine", number: "singular" },
+        "lámpara": { gender: "feminine", number: "singular" },
+        "cuadro": { gender: "masculine", number: "singular" },
+        "alfombra": { gender: "feminine", number: "singular" },
+        "espejo": { gender: "masculine", number: "singular" },
+        "cortinas": { gender: "feminine", number: "plural" },
+        "jardín": { gender: "masculine", number: "singular" },
+        "piscinas": { gender: "feminine", number: "plural" },
+        "techo": { gender: "masculine", number: "singular" },
+        "pared": { gender: "feminine", number: "singular" },
+        "piso": { gender: "masculine", number: "singular" },
+        "puerta": { gender: "feminine", number: "singular" },
+        "coches": { gender: "masculine", number: "plural" },
+        "bicicletas": { gender: "feminine", number: "plural" },
+        "trenes": { gender: "masculine", number: "plural" },
+        "estación": { gender: "feminine", number: "singular" },
+        "aviónes": { gender: "masculine", number: "plural" },
+        "carretera": { gender: "feminine", number: "singular" },
+        "semáforo": { gender: "masculine", number: "singular" },
+        "señales": { gender: "feminine", number: "plural" },
+        "puentes": { gender: "masculine", number: "plural" },
+        "torres": { gender: "feminine", number: "plural" },
+        "hospital": { gender: "masculine", number: "singular" },
+        "farmacias": { gender: "feminine", number: "plural" },
+        "doctor": { gender: "masculine", number: "singular" },
+        "doctoras": { gender: "feminine", number: "plural" },
+        "enfermero": { gender: "masculine", number: "singular" },
+        "enfermeras": { gender: "feminine", number: "plural" },
+        "medicamentos": { gender: "masculine", number: "plural" },
+        "medicinas": { gender: "feminine", number: "plural" },
+        "fuego": { gender: "masculine", number: "singular" },
+        "gasolina": { gender: "feminine", number: "singular" },
+        "aceite": { gender: "masculine", number: "singular" },
+        "electricidad": { gender: "feminine", number: "singular" },
+        "viento": { gender: "masculine", number: "singular" },
+        "lluvia": { gender: "feminine", number: "singular" },
+        "trueno": { gender: "masculine", number: "singular" },
+        "tormentas": { gender: "feminine", number: "plural" },
+        "rayos": { gender: "masculine", number: "plural" },
+        "nubes": { gender: "feminine", number: "plural" },
+        "cielo": { gender: "masculine", number: "singular" },
+        "tierra": { gender: "feminine", number: "singular" },
+        "planeta": { gender: "masculine", number: "singular" },
+        "galaxias": { gender: "feminine", number: "plural" },
+        "universo": { gender: "masculine", number: "singular" },
+        "estrellas": { gender: "feminine", number: "plural" },
+        "espacios": { gender: "masculine", number: "plural" },
+        "gravedad": { gender: "feminine", number: "singular" },
+        "átomo": { gender: "masculine", number: "singular" },
+        "molécula": { gender: "feminine", number: "singular" },
+        "elemento": { gender: "masculine", number: "singular" },
+        "tabla": { gender: "feminine", number: "singular" },
+        "experimento": { gender: "masculine", number: "singular" },
+        "ciencia": { gender: "feminine", number: "singular" },
+        "científico": { gender: "masculine", number: "singular" },
+        "científicas": { gender: "feminine", number: "plural" },
+        "investigadores": { gender: "masculine", number: "plural" },
+        "investigadoras": { gender: "feminine", number: "plural" },
+        "laboratorio": { gender: "masculine", number: "singular" },
+        "hipótesis": { gender: "feminine", number: "singular" },
+        "conclusiónes": { gender: "feminine", number: "plural" },
+        "debate": { gender: "masculine", number: "singular" },
+        "discusión": { gender: "feminine", number: "singular" },
+        "argumentos": { gender: "masculine", number: "plural" },
+        "teorías": { gender: "feminine", number: "plural" },
+        "hecho": { gender: "masculine", number: "singular" },
+        "opinionés": { gender: "feminine", number: "plural" },
+        "perspectivas": { gender: "feminine", number: "plural" },
+        "errores": { gender: "masculine", number: "plural" },
+        "corrección": { gender: "feminine", number: "singular" },
+        "éxito": { gender: "masculine", number: "singular" },
+        "victoria": { gender: "feminine", number: "singular" },
+        "fracaso": { gender: "masculine", number: "singular" },
+        "derrota": { gender: "feminine", number: "singular" },
+        "juegos": { gender: "masculine", number: "plural" },
+        "deporte": { gender: "masculine", number: "singular" },
+        "competición": { gender: "feminine", number: "singular" },
+        "equipos": { gender: "masculine", number: "plural" },
+        "estrategias": { gender: "feminine", number: "plural" },
+        "jugador": { gender: "masculine", number: "singular" },
+        "jugadora": { gender: "feminine", number: "singular" },
+        "árbitros": { gender: "masculine", number: "plural" },
+        "reglas": { gender: "feminine", number: "plural" },
+        "resultados": { gender: "masculine", number: "plural" },
+        "final": { gender: "feminine", number: "singular" },
+        "trofeo": { gender: "masculine", number: "singular" },
+        "medallas": { gender: "feminine", number: "plural" },
+        "oro": { gender: "masculine", number: "singular" },
+        "plata": { gender: "feminine", number: "singular" },
+        "bronce": { gender: "masculine", number: "singular" },
+        "campeón": { gender: "masculine", number: "singular" },
+        "campeona": { gender: "feminine", number: "singular" },
+        "torneo": { gender: "masculine", number: "singular" },
+        "ligas": { gender: "feminine", number: "plural" },
+        "partido": { gender: "masculine", number: "singular" },
+        "entrada": { gender: "feminine", number: "singular" },
+        "estadio": { gender: "masculine", number: "singular" },
+        "público": { gender: "masculine", number: "singular" },
+        "afición": { gender: "feminine", number: "singular" }
+    };
+
+    // Article rules
+    const articles = {
+        definite: {
+            masculine: {
+                singular: "el",
+                plural: "los"
+            },
+            feminine: {
+                singular: "la",
+                plural: "las"
+            }
+        },
+        indefinite: {
+            masculine: {
+                singular: "un",
+                plural: "unos"
+            },
+            feminine: {
+                singular: "una",
+                plural: "unas"
+            }
+        }
+    };
+
+    function handleOptionChange(checkbox) {
+        if (checkbox.checked) {
+            selectedArticleTypes.add(checkbox.value);
+        } else {
+            selectedArticleTypes.delete(checkbox.value);
+        }
+        checkbox.parentElement.classList.toggle('selected', checkbox.checked);
+    }
+
+    function generateQuestion() {
+        if (!gameActive) return;
+
+        // Get random word
+        const wordList = Object.entries(words);
+        const [word, classification] = wordList[Math.floor(Math.random() * wordList.length)];
+        currentWord = { word, ...classification };
+
+        // Choose article type (definite or indefinite)
+        const articleTypes = Array.from(selectedArticleTypes);
+        currentArticleType = articleTypes[Math.floor(Math.random() * articleTypes.length)];
+
+        // Display word and article type
+        document.getElementById('wordDisplay').textContent = word;
+        document.getElementById('articleType').textContent = 
+            `Choose the correct ${currentArticleType} article:`;
+
+        // Show appropriate article buttons
+        document.getElementById('definiteButtons').style.display = 
+            currentArticleType === 'definite' ? 'flex' : 'none';
+        document.getElementById('indefiniteButtons').style.display = 
+            currentArticleType === 'indefinite' ? 'flex' : 'none';
+
+        document.getElementById('feedback').textContent = '';
+    }
+
+    function checkAnswer(selectedArticle) {
+        if (!gameActive || isProcessingAnswer) return;
+        
+        isProcessingAnswer = true;
+        totalAttempts++;
+
+        const correctArticle = articles[currentArticleType][currentWord.gender][currentWord.number];
+        const isCorrect = selectedArticle === correctArticle;
+
+        if (isCorrect) {
+            score++;
+            streak++;
+            showFeedback(`¡Correcto! "${correctArticle} ${currentWord.word}" is correct.`, true);
+        } else {
+            streak = 0;
+            showFeedback(`Incorrect. The correct article is "${correctArticle}" because "${currentWord.word}" is ${currentWord.gender} and ${currentWord.number}.`, false);
+        }
+
+        if (streak > bestStreak) {
+            bestStreak = streak;
+            localStorage.setItem('articlesGameBestStreak', bestStreak);
+        }
+
+        updateDisplay();
+        
+        if (window.nextQuestionTimeout) {
+            clearTimeout(window.nextQuestionTimeout);
+        }
+        
+        window.nextQuestionTimeout = setTimeout(() => {
+            if (gameActive) {
+                nextQuestion();
+            }
+        }, 2000);
+    }
+
+    function showFeedback(message, isCorrect) {
+        const feedback = document.getElementById('feedback');
+        feedback.textContent = message;
+        feedback.className = `feedback ${isCorrect ? 'feedback-correct' : 'feedback-incorrect'}`;
+    }
+
+    function startGame() {
+        if (selectedArticleTypes.size === 0) {
+            alert('Please select at least one article type to practice');
+            return;
+        }
+
+        resetGameState();
+        score = 0;
+        streak = 0;
+        totalAttempts = 0;
+        gameActive = true;
+        
+        updateDisplay();
+        startTimer();
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        if (!gameActive) return;
+        
+        isProcessingAnswer = false;
+        generateQuestion();
+    }
+
+    function startTimer() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+
+        startTime = Date.now();
+        timeLeft = 180; // 3 minutes
+        
+        updateTimer();
+
+        timer = setInterval(() => {
+            const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+            timeLeft = Math.max(180 - elapsedSeconds, 0);
+            
+            updateTimer();
+            
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }, 100);
+    }
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        const timerDisplay = document.getElementById('timer');
+        if (timerDisplay) {
+            timerDisplay.textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        const progressFill = document.getElementById('progressFill');
+        if (progressFill) {
+            const percentageLeft = (timeLeft / 180) * 100;
+            progressFill.style.width = `${percentageLeft}%`;
+        }
+    }
+
+    function updateDisplay() {
+        document.getElementById('score').textContent = `Score: ${score}`;
+        document.getElementById('streak').textContent = `Current Streak: ${streak}`;
+        document.getElementById('highScore').textContent = `Best Streak: ${bestStreak}`;
+    }
+
+    function submitName() {
+        const nameInput = document.getElementById('playerName');
+        playerName = nameInput.value.trim();
+        if (!playerName) {
+            alert('Please enter your name to start');
+            nameInput.focus();
+            return;
+        }
+        
+        document.getElementById('nameEntry').style.display = 'none';
+        document.getElementById('game').style.display = 'block';
+        startGame();
+    }
+
+    function endGame() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+        
+        gameActive = false;
+        
+        document.getElementById('game').style.display = 'none';
+        document.getElementById('end').style.display = 'block';
+        
+        const percentage = totalAttempts > 0 ? Math.round((score / totalAttempts) * 100) : 0;
+        
+        const finalMessage = document.getElementById('finalMessage');
+        finalMessage.innerHTML = `
+            <h2>¡Tiempo!</h2>
+            <h3>Results for ${playerName}:</h3>
+            <div class="results">
+                <p><strong>Final Score:</strong> ${score}</p>
+                <p><strong>Best Streak:</strong> ${bestStreak}</p>
+                <p><strong>Accuracy:</strong> ${percentage}%</p>
+                <p><strong>Total Attempts:</strong> ${totalAttempts}</p>
+            </div>
+        `;
+    }
+
+    function resetGameState() {
+        if (window.nextQuestionTimeout) {
+            clearTimeout(window.nextQuestionTimeout);
+            window.nextQuestionTimeout = null;
+        }
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+        
+        startTime = null;
+        timeLeft = 180;
+        isProcessingAnswer = false;
+        gameActive = true;
+        
+        document.getElementById('feedback').textContent = '';
+    }
+
+    function restartGame() {
+        selectedArticleTypes.clear();
+        document.querySelectorAll('.option-button input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+            checkbox.parentElement.classList.remove('selected');
+        });
+        document.getElementById('end').style.display = 'none';
+        document.getElementById('nameEntry').style.display = 'block';
+        document.getElementById('playerName').value = '';
+        document.getElementById('playerName').focus();
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+        // Add enter key handler for name input
+        document.getElementById('playerName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitName();
+            }
+        });
+
+        // Load best streak from localStorage
+        const savedBestStreak = localStorage.getItem('articlesGameBestStreak');
+        if (savedBestStreak) {
+            bestStreak = parseInt(savedBestStreak);
+        }
+    });
+</script>
+</body>
+</html> 
